@@ -1,0 +1,6 @@
+numpy>=1.24
+scipy>=1.10
+cvxpy>=1.4
+clarabel>=0.6
+scs>=3.2
+matplotlib>=3.7
