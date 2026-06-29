@@ -11,12 +11,12 @@
 //     - 执行器: write() 接收襟翼+TVC 指令
 //   当前仅 SimulatedSensor/SimulatedActuator 实现, 未来 RealSensor 直接替换.
 // =============================================================================
-#ifndef FALCON9_HAL_HAL_HPP
-#define FALCON9_HAL_HAL_HPP
+#ifndef STARSHIP_HAL_HAL_HPP
+#define STARSHIP_HAL_HAL_HPP
 
 #include "../core/fixed_matrix.hpp"
 
-namespace falcon9 {
+namespace starship {
 namespace hal {
 
 // IMU 采样数据 (body 系)
@@ -72,6 +72,6 @@ public:
 };
 
 } // namespace hal
-} // namespace falcon9
+} // namespace starship
 
-#endif // FALCON9_HAL_HAL_HPP
+#endif // STARSHIP_HAL_HAL_HPP

@@ -12,13 +12,13 @@
 //   物理级故障 (偏置漂移/执行器卡死/传感器掉线) 直接测试控制律鲁棒性, 有真实价值.
 //   这与 SpaceX 的故障注入测试理念一致: 注入执行器失效, 验证系统能否安全着陆.
 // =============================================================================
-#ifndef FALCON9_BELLY_FLOP_6DOF_FAULT_INJECTION_HPP
-#define FALCON9_BELLY_FLOP_6DOF_FAULT_INJECTION_HPP
+#ifndef STARSHIP_BELLY_FLOP_6DOF_FAULT_INJECTION_HPP
+#define STARSHIP_BELLY_FLOP_6DOF_FAULT_INJECTION_HPP
 
 #include "hal/hal.hpp"
 #include <cmath>
 
-namespace falcon9 {
+namespace starship {
 namespace belly_flop_6dof {
 
 // =============================================================================
@@ -131,6 +131,6 @@ public:
 };
 
 } // namespace belly_flop_6dof
-} // namespace falcon9
+} // namespace starship
 
-#endif // FALCON9_BELLY_FLOP_6DOF_FAULT_INJECTION_HPP
+#endif // STARSHIP_BELLY_FLOP_6DOF_FAULT_INJECTION_HPP

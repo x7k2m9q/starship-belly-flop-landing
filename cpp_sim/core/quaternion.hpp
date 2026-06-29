@@ -1,6 +1,6 @@
 // =============================================================================
 // quaternion.hpp - 四元数类 (Hamilton 约定)
-// 猎鹰9号火箭回收算法 C++ 翻译项目
+// 星舰回收算法 C++ 翻译项目
 //
 // 约定 (与 Python 仿真严格一致):
 //   q = [w, x, y, z], Hamilton convention
@@ -13,7 +13,7 @@
 #include <cmath>
 #include "fixed_matrix.hpp"
 
-namespace falcon9 {
+namespace starship {
 
 // ===========================================================================
 // Quaternion - 四元数类 (Hamilton 约定)
@@ -182,4 +182,4 @@ public:
 // ---------------------------------------------------------------------------
 inline const Quaternion Q_VERT(0.7071067811865476f, 0.0f, 0.7071067811865476f, 0.0f);
 
-}  // namespace falcon9
+}  // namespace starship

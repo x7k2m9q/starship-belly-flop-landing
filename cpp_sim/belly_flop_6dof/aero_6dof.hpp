@@ -13,13 +13,13 @@
 //
 // 物理参数: 与 Python aero_model_6dof.py 严格一致 (星舰构型)
 // =============================================================================
-#ifndef FALCON9_BELLY_FLOP_6DOF_AERO_HPP
-#define FALCON9_BELLY_FLOP_6DOF_AERO_HPP
+#ifndef STARSHIP_BELLY_FLOP_6DOF_AERO_HPP
+#define STARSHIP_BELLY_FLOP_6DOF_AERO_HPP
 
 #include <cmath>
 #include <cstdint>
 
-namespace falcon9 {
+namespace starship {
 namespace belly_flop_6dof {
 
 // =============================================================================
@@ -287,6 +287,6 @@ inline void trim_flaps(float alpha, float mach,
 }
 
 }  // namespace belly_flop_6dof
-}  // namespace falcon9
+}  // namespace starship
 
-#endif  // FALCON9_BELLY_FLOP_6DOF_AERO_HPP
+#endif  // STARSHIP_BELLY_FLOP_6DOF_AERO_HPP

@@ -1,6 +1,6 @@
 // =============================================================================
 // fixed_matrix.hpp - 编译期定长矩阵模板 (零动态内存)
-// 猎鹰9号火箭回收算法 C++ 翻译项目
+// 星舰回收算法 C++ 翻译项目
 // 约束: 禁止 new/malloc/vector, 内部使用 std::array
 // 所有运算返回值对象 (编译期已知大小, 编译器可优化为栈分配)
 // =============================================================================
@@ -11,7 +11,7 @@
 #include <cstddef>
 #include <type_traits>
 
-namespace falcon9 {
+namespace starship {
 
 // ---------------------------------------------------------------------------
 // FixedMatrix<T, ROWS, COLS> - 编译期固定大小矩阵
@@ -213,4 +213,4 @@ FixedMatrix<T, R, C> operator*(T scalar, const FixedMatrix<T, R, C>& m) {
     return m * scalar;
 }
 
-}  // namespace falcon9
+}  // namespace starship

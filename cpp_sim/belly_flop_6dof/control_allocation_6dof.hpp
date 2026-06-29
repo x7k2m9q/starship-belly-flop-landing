@@ -5,7 +5,7 @@
 //
 // 理论方案 7.0 问题 19: 控制分配矩阵病态
 //   - 4 片襟翼控制 3 个力矩通道 (俯仰/偏航/滚转), 存在 1 维零空间
-//   - 严禁使用 pinv 伪逆 (猎鹰 9 号 Bug 教训: 37 倍力矩低估)
+//   - 严禁使用 pinv 伪逆 (前项目 Bug 教训: 37 倍力矩低估)
 //   - 必须基于物理推导直接分配矩阵
 //
 // 物理推导 (从 aero_6dof.hpp 的力矩公式反推):
@@ -43,13 +43,13 @@
 //   RL: My-, Mx-, Mz+ (俯仰-, 滚转-, 偏航+)
 //   RR: My-, Mx+, Mz- (俯仰-, 滚转+, 偏航-)
 // =============================================================================
-#ifndef FALCON9_BELLY_FLOP_6DOF_CONTROL_ALLOCATION_HPP
-#define FALCON9_BELLY_FLOP_6DOF_CONTROL_ALLOCATION_HPP
+#ifndef STARSHIP_BELLY_FLOP_6DOF_CONTROL_ALLOCATION_HPP
+#define STARSHIP_BELLY_FLOP_6DOF_CONTROL_ALLOCATION_HPP
 
 #include <cmath>
 #include "aero_6dof.hpp"
 
-namespace falcon9 {
+namespace starship {
 namespace belly_flop_6dof {
 
 // =============================================================================
@@ -170,6 +170,6 @@ inline void verify_allocation(const float M_cmd[3], const float delta[4],
 }
 
 }  // namespace belly_flop_6dof
-}  // namespace falcon9
+}  // namespace starship
 
-#endif  // FALCON9_BELLY_FLOP_6DOF_CONTROL_ALLOCATION_HPP
+#endif  // STARSHIP_BELLY_FLOP_6DOF_CONTROL_ALLOCATION_HPP

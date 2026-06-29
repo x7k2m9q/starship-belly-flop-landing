@@ -7,7 +7,7 @@
 //   X = [px, py, pz, vx, vy, vz, qw, qx, qy, qz, p, q, r, m_fuel]
 //        |--位置(NED)--| |--速度(NED)--| |----四元数----| |--角速度(b)--| |燃料|
 //
-// 坐标系 (与猎鹰9号一致, 锁死):
+// 坐标系 (与前项目一致, 锁死):
 //   NED系 (n系): X=北, Y=东, Z=地(向下为正). 重力 g_n=[0,0,g].
 //   箭体系 (b系): Xb=头部, Yb=右, Zb=Xb×Yb.
 //   四元数 q=[w,x,y,z]: b系->n系旋转. v_n = C_b^n(q) @ v_b.
@@ -26,7 +26,7 @@
 //   缺陷32: RK4 每步后四元数归一化 (防数值漂移)
 //   缺陷33: 陀螺耦合项 omega × (I*omega) 必须保留 (禁简化为 I*domega=M)
 //
-// 猎鹰9号 C++ 移植血泪教训 (开发日志.md):
+// 前项目 C++ 移植血泪教训 (开发日志.md):
 //   "omega 反馈通道丢失, PD 退化为 P, 姿态发散 (0.6°→65.8° at t=14)"
 //   → 此处 omega 必须从 state 参数读取, 严禁使用外部缓存或置零.
 //   → state_derivative(s, ...) 内部 omega = s.omega_b(), 完全由调用方控制.
@@ -34,15 +34,15 @@
 //
 // 积分: RK4, dt=0.01s (定步长, 拒绝变步长 — RK4 数值稳定性要求)
 // =============================================================================
-#ifndef FALCON9_BELLY_FLOP_6DOF_DYNAMICS_HPP
-#define FALCON9_BELLY_FLOP_6DOF_DYNAMICS_HPP
+#ifndef STARSHIP_BELLY_FLOP_6DOF_DYNAMICS_HPP
+#define STARSHIP_BELLY_FLOP_6DOF_DYNAMICS_HPP
 
 #include <cmath>
 #include "aero_6dof.hpp"
 #include "../core/fixed_matrix.hpp"
 #include "../core/quaternion.hpp"
 
-namespace falcon9 {
+namespace starship {
 namespace belly_flop_6dof {
 
 // =============================================================================
@@ -237,7 +237,7 @@ inline State6DOF state_derivative(const State6DOF& state, float T_cmd,
     Vec3f pos_n = state.pos_n();
     Vec3f vel_n = state.vel_n();
     Quaternion q = state.q();
-    Vec3f omega_b = state.omega_b();   // ← 猎鹰9号教训: 必须从 state 读取
+    Vec3f omega_b = state.omega_b();   // ← 前项目教训: 必须从 state 读取
     float m_fuel = state.m_fuel();
 
     // 质量/惯量/重力
@@ -405,6 +405,6 @@ inline State6DOF make_initial_state(float h_init = 10000.0f,
 }
 
 }  // namespace belly_flop_6dof
-}  // namespace falcon9
+}  // namespace starship
 
-#endif  // FALCON9_BELLY_FLOP_6DOF_DYNAMICS_HPP
+#endif  // STARSHIP_BELLY_FLOP_6DOF_DYNAMICS_HPP

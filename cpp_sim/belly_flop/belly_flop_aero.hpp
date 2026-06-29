@@ -11,13 +11,13 @@
 //
 // 对应 Python: src/belly_flop/aero_model.py
 // =============================================================================
-#ifndef FALCON9_BELLY_FLOP_AERO_HPP
-#define FALCON9_BELLY_FLOP_AERO_HPP
+#ifndef STARSHIP_BELLY_FLOP_AERO_HPP
+#define STARSHIP_BELLY_FLOP_AERO_HPP
 
 #include <cmath>
 #include <cstdint>
 
-namespace falcon9 {
+namespace starship {
 namespace belly_flop {
 
 // =============================================================================
@@ -228,6 +228,6 @@ inline void trim_flaps(float alpha, float mach, float& delta_fwd, float& delta_a
 }
 
 }  // namespace belly_flop
-}  // namespace falcon9
+}  // namespace starship
 
-#endif  // FALCON9_BELLY_FLOP_AERO_HPP
+#endif  // STARSHIP_BELLY_FLOP_AERO_HPP

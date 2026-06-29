@@ -17,8 +17,8 @@
 #include <cstdio>
 #include <cmath>
 
-using namespace falcon9;
-using namespace falcon9::belly_flop_6dof;
+using namespace starship;
+using namespace starship::belly_flop_6dof;
 
 static void banner(const char* s) {
     printf("======================================================================\n");

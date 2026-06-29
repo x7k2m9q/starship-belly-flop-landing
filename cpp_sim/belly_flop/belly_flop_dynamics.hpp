@@ -7,13 +7,13 @@
 //
 // 对应 Python: src/belly_flop/dynamics.py
 // =============================================================================
-#ifndef FALCON9_BELLY_FLOP_DYNAMICS_HPP
-#define FALCON9_BELLY_FLOP_DYNAMICS_HPP
+#ifndef STARSHIP_BELLY_FLOP_DYNAMICS_HPP
+#define STARSHIP_BELLY_FLOP_DYNAMICS_HPP
 
 #include "belly_flop_aero.hpp"
 #include <cmath>
 
-namespace falcon9 {
+namespace starship {
 namespace belly_flop {
 
 // =============================================================================
@@ -134,6 +134,6 @@ inline State rk4_step(const State& s, float T, float theta_cmd, float dt,
 }
 
 }  // namespace belly_flop
-}  // namespace falcon9
+}  // namespace starship
 
-#endif  // FALCON9_BELLY_FLOP_DYNAMICS_HPP
+#endif  // STARSHIP_BELLY_FLOP_DYNAMICS_HPP

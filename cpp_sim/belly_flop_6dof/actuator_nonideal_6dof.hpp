@@ -29,13 +29,13 @@
 //
 // 零动态内存: 所有缓冲区为定长数组, 无 new/malloc/vector
 // =============================================================================
-#ifndef FALCON9_BELLY_FLOP_6DOF_ACTUATOR_NONIDEAL_HPP
-#define FALCON9_BELLY_FLOP_6DOF_ACTUATOR_NONIDEAL_HPP
+#ifndef STARSHIP_BELLY_FLOP_6DOF_ACTUATOR_NONIDEAL_HPP
+#define STARSHIP_BELLY_FLOP_6DOF_ACTUATOR_NONIDEAL_HPP
 
 #include <cmath>
 #include "aero_6dof.hpp"
 
-namespace falcon9 {
+namespace starship {
 namespace belly_flop_6dof {
 
 // =============================================================================
@@ -354,6 +354,6 @@ public:
 };
 
 }  // namespace belly_flop_6dof
-}  // namespace falcon9
+}  // namespace starship
 
-#endif  // FALCON9_BELLY_FLOP_6DOF_ACTUATOR_NONIDEAL_HPP
+#endif  // STARSHIP_BELLY_FLOP_6DOF_ACTUATOR_NONIDEAL_HPP

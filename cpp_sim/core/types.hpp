@@ -8,13 +8,13 @@
 //   2. float32 默认, double 仅用于 EKF 协方差 P
 //   3. 所有矩阵使用 FixedMatrix 模板
 // =============================================================================
-#ifndef FALCON9_CORE_TYPES_HPP
-#define FALCON9_CORE_TYPES_HPP
+#ifndef STARSHIP_CORE_TYPES_HPP
+#define STARSHIP_CORE_TYPES_HPP
 
 #include <cstdint>
 #include "fixed_matrix.hpp"
 
-namespace falcon9 {
+namespace starship {
 
 // ---------------------------------------------------------------------------
 // 安全状态机 (与 Python safety_monitor.py SafetyMonitor 一致)
@@ -183,6 +183,6 @@ struct ControlOutput {
 };
 #pragma pack(pop)
 
-}  // namespace falcon9
+}  // namespace starship
 
-#endif  // FALCON9_CORE_TYPES_HPP
+#endif  // STARSHIP_CORE_TYPES_HPP

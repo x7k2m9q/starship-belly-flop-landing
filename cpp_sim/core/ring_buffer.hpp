@@ -1,6 +1,6 @@
 // =============================================================================
 // ring_buffer.hpp - 无锁环形缓冲区 (FreeRTOS 任务间通信)
-// 猎鹰9号火箭回收算法 C++ 翻译项目
+// 星舰回收算法 C++ 翻译项目
 //
 // 设计:
 //   - SPSC (单生产者单消费者) 无锁环形缓冲
@@ -14,7 +14,7 @@
 #include <atomic>
 #include <cstddef>
 
-namespace falcon9 {
+namespace starship {
 
 // ===========================================================================
 // RingBuffer<T, N> - 无锁环形缓冲区 (SPSC)
@@ -92,4 +92,4 @@ private:
     std::atomic<size_type> tail_;    // 读位置 (消费者写, 生产者读)
 };
 
-}  // namespace falcon9
+}  // namespace starship

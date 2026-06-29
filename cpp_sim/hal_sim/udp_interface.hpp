@@ -46,7 +46,7 @@
 
 #include "../core/types.hpp"
 
-namespace falcon9 {
+namespace starship {
 
 // ===========================================================================
 // UDP初始化/清理 (Windows需要WSAStartup)
@@ -205,4 +205,4 @@ public:
 // 注意: C++结构体可能有padding, Python端需用struct手动打包
 // ===========================================================================
 
-}  // namespace falcon9
+}  // namespace starship

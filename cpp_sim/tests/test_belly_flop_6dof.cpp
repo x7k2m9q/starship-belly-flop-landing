@@ -3,7 +3,7 @@
 // =============================================================================
 // 验证目标 (聚焦关键物理, 拒绝无意义测试):
 //   1. 欧拉角↔四元数转换正确性 (Belly-Flop θ=0°/85°/90° 三点验证)
-//   2. omega 反馈通道完整性 (猎鹰9号血泪教训: 严禁置零)
+//   2. omega 反馈通道完整性 (前项目教训: 严禁置零)
 //   3. 全程闭环 BELLY→FLIP→LANDING (物理稳定性 + 无发散)
 //
 // 编译:
@@ -13,8 +13,8 @@
 #include <cstdio>
 #include <cmath>
 
-using namespace falcon9;
-using namespace falcon9::belly_flop_6dof;
+using namespace starship;
+using namespace starship::belly_flop_6dof;
 
 static void banner(const char* s) {
     printf("======================================================================\n");
@@ -79,9 +79,9 @@ static bool test_quat_euler_conversion() {
 }
 
 // =============================================================================
-// 测试 2: omega 反馈通道完整性 (猎鹰9号血泪教训)
+// 测试 2: omega 反馈通道完整性 (前项目教训)
 // =============================================================================
-// 猎鹰9号 C++ 移植 Bug: omega 反馈通道丢失 → PD 退化为 P → 姿态发散
+// 前项目 C++ 移植 Bug: omega 反馈通道丢失 → PD 退化为 P → 姿态发散
 //   (开发日志: tilt 从 0.6° → 65.8° at t=14, 火箭失控)
 //
 // 验证方法:
@@ -90,7 +90,7 @@ static bool test_quat_euler_conversion() {
 //   若 omega 被错误置零, 陀螺耦合项 = 0, domega 仅由 M/I 决定.
 // =============================================================================
 static bool test_omega_feedback_channel() {
-    banner("[2] omega 反馈通道完整性 (猎鹰9号血泪教训)");
+    banner("[2] omega 反馈通道完整性 (前项目教训)");
     bool pass = true;
 
     // 构造状态: 85° 俯仰, 非零 omega (p=0.1, q=0.5, r=0.05 rad/s)

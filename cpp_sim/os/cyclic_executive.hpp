@@ -26,12 +26,12 @@
 //   Guidance 1Hz = 每 100 个控制周期跑一次.
 //   Safety 10Hz = 每 10 个控制周期跑一次.
 // =============================================================================
-#ifndef FALCON9_OS_CYCLIC_EXECUTIVE_HPP
-#define FALCON9_OS_CYCLIC_EXECUTIVE_HPP
+#ifndef STARSHIP_OS_CYCLIC_EXECUTIVE_HPP
+#define STARSHIP_OS_CYCLIC_EXECUTIVE_HPP
 
 #include <cstdint>
 
-namespace falcon9 {
+namespace starship {
 namespace os {
 
 // 任务上下文 (传递给 task 函数的参数)
@@ -98,6 +98,6 @@ public:
 };
 
 } // namespace os
-} // namespace falcon9
+} // namespace starship
 
-#endif // FALCON9_OS_CYCLIC_EXECUTIVE_HPP
+#endif // STARSHIP_OS_CYCLIC_EXECUTIVE_HPP

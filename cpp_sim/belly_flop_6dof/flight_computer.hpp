@@ -26,8 +26,8 @@
 //   真值状态 (仿真中无 EKF). 真实系统中 Control 任务从 EKF 估计状态运行,
 //   EKF 输入来自 RingBuffer 中的 IMU 采样. 架构已就绪, 待 EKF 移植.
 // =============================================================================
-#ifndef FALCON9_BELLY_FLOP_6DOF_FLIGHT_COMPUTER_HPP
-#define FALCON9_BELLY_FLOP_6DOF_FLIGHT_COMPUTER_HPP
+#ifndef STARSHIP_BELLY_FLOP_6DOF_FLIGHT_COMPUTER_HPP
+#define STARSHIP_BELLY_FLOP_6DOF_FLIGHT_COMPUTER_HPP
 
 #include "phase_controller_6dof.hpp"
 #include "fault_injection.hpp"
@@ -40,8 +40,8 @@
 #include <chrono>
 #include <cstdio>
 
-// SimulatedSensor::read() 实现需在 hal 命名空间内 (声明在 hal.hpp 的 falcon9::hal)
-namespace falcon9 {
+// SimulatedSensor::read() 实现需在 hal 命名空间内 (声明在 hal.hpp 的 starship::hal)
+namespace starship {
 namespace hal {
 
 inline IMUSample SimulatedSensor::read(const float state14[14], float t) {
@@ -59,9 +59,9 @@ inline IMUSample SimulatedSensor::read(const float state14[14], float t) {
 }
 
 } // namespace hal
-} // namespace falcon9
+} // namespace starship
 
-namespace falcon9 {
+namespace starship {
 namespace belly_flop_6dof {
 
 // =============================================================================
@@ -238,7 +238,7 @@ private:
         imu_buffer_.peek_latest(latest_imu);  // 不消费, 只偷看最新
 
         // 运行三阶段控制器 (使用真值状态, 仿真中无 EKF)
-        // 猎鹰9号教训: omega 从 state 读取, 控制器内部 omega_actual 为必传
+        // 前项目教训: omega 从 state 读取, 控制器内部 omega_actual 为必传
         float T_cmd, delta_flaps[4], tvc_gimbal[2];
         ControllerInfo info;
         bool ctrl_kill = controller_.update(truth_state_, dt_,
@@ -323,6 +323,6 @@ private:
 };
 
 } // namespace belly_flop_6dof
-} // namespace falcon9
+} // namespace starship
 
-#endif // FALCON9_BELLY_FLOP_6DOF_FLIGHT_COMPUTER_HPP
+#endif // STARSHIP_BELLY_FLOP_6DOF_FLIGHT_COMPUTER_HPP

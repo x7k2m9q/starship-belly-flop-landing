@@ -1,9 +1,9 @@
 # Starship Belly-Flop Recovery 6-DOF Simulation | 星舰腹部翻转回收六自由度仿真
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/)
-[![MC Success Rate](https://img.shields.io/badge/MC%20Success-100%25-brightgreen.svg)](#monte-carlo-results)
-[![Unit Tests](https://img.shields.io/badge/Unit%20Tests-42%2F42-brightgreen.svg)](#test-suite)
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
+[![Python](https://img.shields.io/badge/python-3.12%2B-3776AB.svg?logo=python&logoColor=white)](https://www.python.org/)
+[![MC](https://img.shields.io/badge/Monte%20Carlo-20%2F20-4C1.svg)](#monte-carlo-results)
+[![Tests](https://img.shields.io/badge/unit%20tests-42%2F42-5C2D91.svg)](#test-suite)
 
 > An engineering-grade six-degree-of-freedom simulator for the SpaceX Starship
 > "Belly-Flop → Flip → Landing" recovery maneuver, with SCvx guidance,
@@ -249,7 +249,7 @@ The full list with reproduction steps is in [`docs/星舰论文.md`](docs/星舰
 
 ## License | 许可证
 
-MIT License — see [LICENSE](LICENSE).
+Apache License 2.0 — see [LICENSE](LICENSE).
 
 ## References | 参考文献
 

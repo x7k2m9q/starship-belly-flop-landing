@@ -7,7 +7,7 @@
 //   - 问题 17: PD 增益在 6DOF 下需重新整定 (Kp=2·I·wn², Kd=2·ζ·wn·I)
 //   - 问题 18: 四元数控制律双覆盖错误 (sign(qw) 处理)
 //
-// 控制律: 四元数误差 PD (复用猎鹰 9 号架构)
+// 控制律: 四元数误差 PD (复用前项目架构)
 //   e_q = q_actual^{-1} ⊗ q_des   (body 系误差, 修复 10)
 //   e_vec = e_q[1:4]               (矢量部分, ≈ θ_err/2)
 //   sign(qw) 处理双覆盖: w<0 整体取反
@@ -24,7 +24,7 @@
 //   串联在 pitch/yaw 误差通道, 防止激励弯曲共振
 //   滚转通道 (Xb) 无弯曲耦合, 不过滤
 //
-// 猎鹰 9 号 C++ 移植血泪教训 (开发日志.md):
+// 前项目 C++ 移植血泪教训 (开发日志.md):
 //   "omega 反馈通道丢失, PD 退化为 P, 姿态发散 (0.6°→65.8° at t=14)"
 //   → omega_actual 为必填参数 (无默认值), 强制调用方传入 state.omega_b()
 //   → e_omega = omega_des - omega_actual, 严禁 omega_actual 置零
@@ -33,8 +33,8 @@
 //   M_cmd → allocate_flaps_normalized → 4 片襟翼偏转
 //   TVC gimbal → 推力矢量控制 (俯仰/偏航)
 // =============================================================================
-#ifndef FALCON9_BELLY_FLOP_6DOF_ATTITUDE_CONTROL_HPP
-#define FALCON9_BELLY_FLOP_6DOF_ATTITUDE_CONTROL_HPP
+#ifndef STARSHIP_BELLY_FLOP_6DOF_ATTITUDE_CONTROL_HPP
+#define STARSHIP_BELLY_FLOP_6DOF_ATTITUDE_CONTROL_HPP
 
 #include <cmath>
 #include "aero_6dof.hpp"
@@ -43,7 +43,7 @@
 #include "../core/fixed_matrix.hpp"
 #include "../core/quaternion.hpp"
 
-namespace falcon9 {
+namespace starship {
 namespace belly_flop_6dof {
 
 // =============================================================================
@@ -177,7 +177,7 @@ public:
     //   q_des:        期望四元数
     //   omega_des:    期望角速度 (body 系) [p, q, r]
     //   q_actual:     实际四元数
-    //   omega_actual: 实际角速度 (body 系) [p, q, r]   ← 必填, 禁置零 (猎鹰9号教训)
+    //   omega_actual: 实际角速度 (body 系) [p, q, r]   ← 必填, 禁置零 (前项目教训)
     //   I:            转动惯量 (对角阵)
     //   m_fuel:       当前燃料 (kg, 用于惯量自适应 — 已通过 I 传入)
     //   Q_dyn:        动压 (Pa)
@@ -207,7 +207,7 @@ public:
         }
         float e_vec[3] = {e_q.x, e_q.y, e_q.z};
 
-        // 角速度误差 (猎鹰9号教训: omega_actual 必须从 state 传入)
+        // 角速度误差 (前项目教训: omega_actual 必须从 state 传入)
         float e_omega[3] = {
             omega_des[0] - omega_actual[0],
             omega_des[1] - omega_actual[1],
@@ -279,6 +279,6 @@ public:
 };
 
 }  // namespace belly_flop_6dof
-}  // namespace falcon9
+}  // namespace starship
 
-#endif  // FALCON9_BELLY_FLOP_6DOF_ATTITUDE_CONTROL_HPP
+#endif  // STARSHIP_BELLY_FLOP_6DOF_ATTITUDE_CONTROL_HPP

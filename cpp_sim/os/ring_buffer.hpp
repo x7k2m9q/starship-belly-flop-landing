@@ -14,13 +14,13 @@
 //   本类实现真实无锁队列, 在协作式调度器中作为速率缓冲 (IMU 1000Hz → 控制 100Hz),
 //   移植 FreeRTOS 时生产者/消费者各为独立 task, 此类零修改复用.
 // =============================================================================
-#ifndef FALCON9_OS_RING_BUFFER_HPP
-#define FALCON9_OS_RING_BUFFER_HPP
+#ifndef STARSHIP_OS_RING_BUFFER_HPP
+#define STARSHIP_OS_RING_BUFFER_HPP
 
 #include <atomic>
 #include <cstddef>
 
-namespace falcon9 {
+namespace starship {
 namespace os {
 
 template <typename T, std::size_t N>
@@ -73,6 +73,6 @@ public:
 };
 
 } // namespace os
-} // namespace falcon9
+} // namespace starship
 
-#endif // FALCON9_OS_RING_BUFFER_HPP
+#endif // STARSHIP_OS_RING_BUFFER_HPP

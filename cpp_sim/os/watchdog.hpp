@@ -13,12 +13,12 @@
 //   改为逻辑复位: 设置 fault 标志, 由安全任务决定处置 (如切到安全模式/终止).
 //   移植 FreeRTOS 时, 超时可直接调用 NVIC_SystemReset() 真复位.
 // =============================================================================
-#ifndef FALCON9_OS_WATCHDOG_HPP
-#define FALCON9_OS_WATCHDOG_HPP
+#ifndef STARSHIP_OS_WATCHDOG_HPP
+#define STARSHIP_OS_WATCHDOG_HPP
 
 #include <cstdint>
 
-namespace falcon9 {
+namespace starship {
 namespace os {
 
 class Watchdog {
@@ -67,6 +67,6 @@ public:
 };
 
 } // namespace os
-} // namespace falcon9
+} // namespace starship
 
-#endif // FALCON9_OS_WATCHDOG_HPP
+#endif // STARSHIP_OS_WATCHDOG_HPP

@@ -29,8 +29,8 @@
 //   - 翻转超时 > 8s
 //   - 能量检查: a_needed > 0.7·a_avail (推力不足撞地)
 // =============================================================================
-#ifndef FALCON9_BELLY_FLOP_6DOF_PHASE_CONTROLLER_HPP
-#define FALCON9_BELLY_FLOP_6DOF_PHASE_CONTROLLER_HPP
+#ifndef STARSHIP_BELLY_FLOP_6DOF_PHASE_CONTROLLER_HPP
+#define STARSHIP_BELLY_FLOP_6DOF_PHASE_CONTROLLER_HPP
 
 #include <cmath>
 #include "aero_6dof.hpp"
@@ -41,7 +41,7 @@
 #include "../core/fixed_matrix.hpp"
 #include "../core/quaternion.hpp"
 
-namespace falcon9 {
+namespace starship {
 namespace belly_flop_6dof {
 
 // =============================================================================
@@ -611,7 +611,7 @@ public:
 
         // ============ 姿态控制器 ============
         Quaternion q_actual = state.q();
-        Vec3f omega_actual = state.omega_b();   // ← 猎鹰9号教训: 从 state 读取
+        Vec3f omega_actual = state.omega_b();   // ← 前项目教训: 从 state 读取
         InertiaTensor I = get_inertia_tensor(m_fuel);
 
         // 期望四元数
@@ -668,6 +668,6 @@ public:
 };
 
 }  // namespace belly_flop_6dof
-}  // namespace falcon9
+}  // namespace starship
 
-#endif  // FALCON9_BELLY_FLOP_6DOF_PHASE_CONTROLLER_HPP
+#endif  // STARSHIP_BELLY_FLOP_6DOF_PHASE_CONTROLLER_HPP

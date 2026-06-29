@@ -39,7 +39,7 @@
 #include "../gnc/safety.hpp"
 #include "../gnc/sensor_guard.hpp"
 
-namespace falcon9 {
+namespace starship {
 
 // ===========================================================================
 // 时间工具
@@ -450,4 +450,4 @@ inline void join_flight_computer(FlightThreads& threads) {
     if (threads.guidance.joinable()) threads.guidance.join();
 }
 
-}  // namespace falcon9
+}  // namespace starship
