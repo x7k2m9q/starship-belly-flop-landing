@@ -7,8 +7,8 @@ Step 7C-1: 固定 α 的 SCvx (验证框架)
   - α = 80° 恒定, ∂aero/∂α = 0
   - 状态 X = [x, h, vx, vz] (4维, θ=α+γ 不独立)
   - 控制 U = [T] (1维)
-  - tgo = 1.2·sqrt(h²+x²)/V (暗礁11)
-  - T 下限 T_idle (暗礁12: 防T=0使TVC无效)
+  - tgo = 1.2·sqrt(h²+x²)/V (缺陷11)
+  - T 下限 T_idle (缺陷12: 防T=0使TVC无效)
   - Kill: 不收敛 → 基本框架有问题
 
 Step 7C-2: θ_cmd 控制量 + 线性气动 (验证可控性)
@@ -17,7 +17,7 @@ Step 7C-2: θ_cmd 控制量 + 线性气动 (验证可控性)
   - 二阶跟踪动力学, T·sin(θ) Taylor, CD 线性化
 
 Step 7C-3: 完整 sin²(α) 凸化 (9.0 最终目标)
-  - Q·CD 一阶 Taylor, γ 偏导, 暗礁3论文讨论
+  - Q·CD 一阶 Taylor, γ 偏导, 缺陷3论文讨论
 
 SCvx 算法:
   1. 初始化参考轨迹 (X_bar, U_bar)
@@ -240,7 +240,7 @@ class SCvxSolver7C1:
             # 动力学
             constraints.append(
                 X[:, k + 1] == A_list[k] @ X[:, k] + B_list[k] @ U[:, k] + C_list[k])
-            # 控制约束 (暗礁12: T下限T_idle)
+            # 控制约束 (缺陷12: T下限T_idle)
             constraints.append(U[0, k] >= T_IDLE)
             constraints.append(U[0, k] <= T_MAX)
             # 信赖域 (位置+速度分开)
@@ -411,9 +411,9 @@ def dynamics_7c2(state, U, m_fuel):
     返回: dstate/dt (6维)
 
     注: T·sin(θ)双线性和sin²(α)非线性由数值Jacobian自动线性化.
-        暗礁13(二阶跟踪): θ̈ = ωn²·(θ_cmd-θ) - 2ζωn·q
-        暗礁14(T·sin(θ) Taylor): 数值Jacobian ∂(T·sin(θ))/∂T=sin(θ̄), ∂/∂θ=T̄·cos(θ̄)
-        暗礁15(CD线性化): sin²(α)≈sin²(ᾱ)+sin(2ᾱ)·Δα, 数值Jacobian自动处理
+        缺陷13(二阶跟踪): θ̈ = ωn²·(θ_cmd-θ) - 2ζωn·q
+        缺陷14(T·sin(θ) Taylor): 数值Jacobian ∂(T·sin(θ))/∂T=sin(θ̄), ∂/∂θ=T̄·cos(θ̄)
+        缺陷15(CD线性化): sin²(α)≈sin²(ᾱ)+sin(2ᾱ)·Δα, 数值Jacobian自动处理
     """
     x, h, vx, vz, theta, q = state
     T, theta_cmd = U
@@ -436,7 +436,7 @@ def dynamics_7c2(state, U, m_fuel):
     ax = (Fx_aero + T * np.sin(theta)) / m
     az = (Fz_aero - T * np.cos(theta)) / m + g
 
-    # θ二阶跟踪动力学 (暗礁13: 防SCvx规划1步跳80°)
+    # θ二阶跟踪动力学 (缺陷13: 防SCvx规划1步跳80°)
     dq_dt = OMEGA_N_TRACK ** 2 * (theta_cmd - theta) - 2 * ZETA_TRACK * OMEGA_N_TRACK * q
 
     return np.array([vx, -vz, ax, az, q, dq_dt])
@@ -448,9 +448,9 @@ def jacobian_7c2(state, U, m_fuel):
     A = ∂f/∂X (6×6), B = ∂f/∂U (6×2)
 
     自动处理:
-      - T·sin(θ)双线性 (暗礁14): ∂(T·sin(θ))/∂T=sin(θ̄), ∂/∂θ=T̄·cos(θ̄)
-      - sin²(α)非线性 (暗礁15): ∂CD/∂α=CDα·sin(2ᾱ)
-      - γ=atan2偏导 (暗礁18): ∂γ/∂vx=vz/(vx²+vz²), ∂γ/∂vz=-vx/(vx²+vz²)
+      - T·sin(θ)双线性 (缺陷14): ∂(T·sin(θ))/∂T=sin(θ̄), ∂/∂θ=T̄·cos(θ̄)
+      - sin²(α)非线性 (缺陷15): ∂CD/∂α=CDα·sin(2ᾱ)
+      - γ=atan2偏导 (缺陷18): ∂γ/∂vx=vz/(vx²+vz²), ∂γ/∂vz=-vx/(vx²+vz²)
     """
     eps = 1e-6
     f0 = dynamics_7c2(state, U, m_fuel)
@@ -584,17 +584,17 @@ class SCvxSolver7C2:
             # 动力学
             constraints.append(
                 X[:, k + 1] == A_list[k] @ X[:, k] + B_list[k] @ U[:, k] + C_list[k])
-            # 控制约束 (暗礁12: T>=T_idle)
+            # 控制约束 (缺陷12: T>=T_idle)
             constraints.append(U[0, k] >= T_IDLE)
             constraints.append(U[0, k] <= T_MAX)
             constraints.append(U[1, k] >= THETA_CMD_MIN)
             constraints.append(U[1, k] <= THETA_CMD_MAX)
-            # 信赖域 (暗礁16: |Δθ|<10°, |Δvx|<30, |Δvz|<30, |ΔT|<0.3·T_max)
+            # 信赖域 (缺陷16: |Δθ|<10°, |Δvx|<30, |Δvz|<30, |ΔT|<0.3·T_max)
             constraints.append(cp.norm(X[4, k] - X_ref[4, k], 'inf') <= self.trust_theta)
             constraints.append(cp.norm(X[2:4, k] - X_ref[2:4, k], 'inf') <= self.trust_v)
             constraints.append(cp.norm(U[0, k] - U_ref[0, k], 'inf') <= self.trust_T)
             constraints.append(cp.norm(X[:2, k] - X_ref[:2, k], 'inf') <= self.trust_pos)
-            # θ_cmd变化率约束 (暗礁13: 防θ_cmd 1步跳80°, PD跟踪不了)
+            # θ_cmd变化率约束 (缺陷13: 防θ_cmd 1步跳80°, PD跟踪不了)
             if k > 0:
                 constraints.append(cp.norm(U[1, k] - U[1, k-1], 'inf') <= np.deg2rad(5.0))
 
@@ -720,10 +720,10 @@ def simulate_scvx_trajectory_7c2(X0, U_opt, dt, m_fuel_init=M_FUEL_INIT):
 # 解析 Jacobian (与 7C-2 数值 Jacobian 对比验证精度)
 # 显式仿射表达式 (cvxpy DCP 合规, 不依赖数值差分)
 #
-# 暗礁17: Q·CD 一阶 Taylor: D ≈ Q̄·CD_lin + CD̄·Q_lin - Q̄·CD̄
-# 暗礁18: γ偏导: ∂γ/∂vx=vz/(vx²+vz²), ∂γ/∂vz=-vx/(vx²+vz²)
-# 暗礁19: sin(2·85°)≈0.17 敏感度消失 (配平点附近, 论文讨论)
-# 暗礁20: CL的cos(2α)展开·0.5失速因子
+# 缺陷17: Q·CD 一阶 Taylor: D ≈ Q̄·CD_lin + CD̄·Q_lin - Q̄·CD̄
+# 缺陷18: γ偏导: ∂γ/∂vx=vz/(vx²+vz²), ∂γ/∂vz=-vx/(vx²+vz²)
+# 缺陷19: sin(2·85°)≈0.17 敏感度消失 (配平点附近, 论文讨论)
+# 缺陷20: CL的cos(2α)展开·0.5失速因子
 #
 # 凸化数学推导 (9.0 核心):
 #   α = θ - γ,  Δα = Δθ - (∂γ/∂vx·Δvx + ∂γ/∂vz·Δvz)
@@ -741,10 +741,10 @@ def analytical_jacobian_7c3(state, U, m_fuel):
     Step 7C-3 解析 Jacobian (与 7C-2 数值 Jacobian 对比验证).
 
     完整解析推导, 处理所有非线性:
-      - γ=atan2 偏导 (暗礁18)
-      - sin²(α) 三角恒等式 (暗礁15/19)
-      - Q·CD 乘积 Taylor (暗礁17)
-      - T·sin(θ) 双线性 (暗礁14)
+      - γ=atan2 偏导 (缺陷18)
+      - sin²(α) 三角恒等式 (缺陷15/19)
+      - Q·CD 乘积 Taylor (缺陷17)
+      - T·sin(θ) 双线性 (缺陷14)
 
     state: [x, h, vx, vz, θ, q] (6维)
     U: [T, θ_cmd] (2维)
@@ -771,7 +771,7 @@ def analytical_jacobian_7c3(state, U, m_fuel):
         B[5, 1] = OMEGA_N_TRACK ** 2
         return A, B
 
-    # ---- γ = atan2(vx, vz) 偏导 (暗礁18) ----
+    # ---- γ = atan2(vx, vz) 偏导 (缺陷18) ----
     # ∂γ/∂vx = vz/(vx²+vz²), ∂γ/∂vz = -vx/(vx²+vz²)
     dgamma_dvx = vz / V2
     dgamma_dvz = -vx / V2
@@ -804,7 +804,7 @@ def analytical_jacobian_7c3(state, U, m_fuel):
     dCD_dvx = dCD_dalpha * dalpha_dvx
     dCD_dvz = dCD_dalpha * dalpha_dvz
 
-    # ---- CL = CLα·sin(2α)·0.5 (暗礁20: 0.5失速因子) ----
+    # ---- CL = CLα·sin(2α)·0.5 (缺陷20: 0.5失速因子) ----
     # ∂CL/∂α = CLα·cos(2α)·2·0.5 = CLα·cos(2α)  (链式法则: d(sin(2α))/dα=2cos(2α), 再乘0.5)
     CL = CLa * sin_2alpha * 0.5
     dCL_dalpha = CLa * cos_2alpha  # 不是 *0.5, 因为 2*0.5=1
@@ -812,7 +812,7 @@ def analytical_jacobian_7c3(state, U, m_fuel):
     dCL_dvx = dCL_dalpha * dalpha_dvx
     dCL_dvz = dCL_dalpha * dalpha_dvz
 
-    # ---- Q = 0.5·ρ·V²·S (暗礁17: Q·CD Taylor) ----
+    # ---- Q = 0.5·ρ·V²·S (缺陷17: Q·CD Taylor) ----
     # ∂Q/∂vx = ρ·S·vx, ∂Q/∂vz = ρ·S·vz
     Q = 0.5 * rho * V2 * S_REF
     dQ_dvx = rho * S_REF * vx
@@ -849,7 +849,7 @@ def analytical_jacobian_7c3(state, U, m_fuel):
                - dL_dvz * sin_gamma - L * cos_gamma * dgamma_dvz)
     dFz_dtheta = -dD_dtheta * cos_gamma - dL_dtheta * sin_gamma
 
-    # ---- 推力方向 (T·sin(θ), T·cos(θ) 双线性, 暗礁14) ----
+    # ---- 推力方向 (T·sin(θ), T·cos(θ) 双线性, 缺陷14) ----
     sin_theta = np.sin(theta)
     cos_theta = np.cos(theta)
     # ∂(T·sin(θ))/∂T = sin(θ), ∂(T·sin(θ))/∂θ = T·cos(θ)
@@ -928,7 +928,7 @@ class SCvxSolver7C3:
 
     与 7C-2 区别:
       1. 使用解析 Jacobian (精度更高, 无数值差分误差)
-      2. 验证暗礁17/18/19/20 全部处理
+      2. 验证缺陷17/18/19/20 全部处理
       3. Kill: 10 次不收敛 → 退回 7C-2
 
     状态: X = [x, h, vx, vz, θ, q] (6维)
@@ -1025,7 +1025,7 @@ class SCvxSolver7C3:
             constraints.append(cp.norm(X[2:4, k] - X_ref[2:4, k], 'inf') <= self.trust_v)
             constraints.append(cp.norm(U[0, k] - U_ref[0, k], 'inf') <= self.trust_T)
             constraints.append(cp.norm(X[:2, k] - X_ref[:2, k], 'inf') <= self.trust_pos)
-            # 暗礁13: θ_cmd 变化率约束
+            # 缺陷13: θ_cmd 变化率约束
             if k > 0:
                 constraints.append(cp.norm(U[1, k] - U[1, k-1], 'inf') <= np.deg2rad(5.0))
 
@@ -1106,7 +1106,7 @@ class SCvxSolver7C3:
 
 def analyze_reef19_sensitivity():
     """
-    暗礁19 论文讨论: sin(2·85°)≈0.17 敏感度消失.
+    缺陷19 论文讨论: sin(2·85°)≈0.17 敏感度消失.
 
     在配平点 α=85° 附近, CD 对 α 的偏导:
       ∂CD/∂α = CDα·sin(2α)
@@ -1143,7 +1143,7 @@ def analyze_reef19_sensitivity():
         'sens_at_max_45deg': sens_max,
         'ratio_trim_to_max': ratio,
         'discussion': (
-            "暗礁19: 配平点 α=85° 附近 sin(2α)≈0.17, CD 对 α 敏感度仅为最大值的 17.4%. "
+            "缺陷19: 配平点 α=85° 附近 sin(2α)≈0.17, CD 对 α 敏感度仅为最大值的 17.4%. "
             "SCvx 在配平点附近会认为'改 θ 没用', 只调推力. "
             "这不是凸化缺陷, 是物理本质: 配平点就是力矩平衡点. "
             "实际飞行中翻转段(α:80°→0°)会经过敏感度区域, 不影响全局优化. "

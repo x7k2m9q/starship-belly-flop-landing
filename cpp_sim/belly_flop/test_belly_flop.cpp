@@ -2,7 +2,7 @@
 // test_belly_flop.cpp - Belly-Flop C++验证 (Step 7E)
 // =============================================================================
 // 验证目标:
-//   1. 暗礁24: tanh替代sigmoid数值稳定性
+//   1. 缺陷24: tanh替代sigmoid数值稳定性
 //   2. 翻转段bang-bang+PD+前馈 (Step 7D C++版)
 //   3. 全程集成 BELLY→FLIP→LANDING (Step 7E C++版)
 //
@@ -21,10 +21,10 @@ void banner(const char* s) {
 }
 
 // =============================================================================
-// 1. 暗礁24: tanh替代sigmoid验证
+// 1. 缺陷24: tanh替代sigmoid验证
 // =============================================================================
 void test_reef24_tanh_sigmoid() {
-    banner("[1] 暗礁24: tanh替代sigmoid数值稳定性");
+    banner("[1] 缺陷24: tanh替代sigmoid数值稳定性");
 
     // 测试极端值: sigmoid在x<-30时溢出, tanh不会
     float test_values[] = {-100.0f, -50.0f, -30.0f, -10.0f, -1.0f,
@@ -52,7 +52,7 @@ void test_reef24_tanh_sigmoid() {
         printf("  %8.1f %16.10f %s\n", x, sig, valid ? "OK" : "FAIL");
     }
 
-    // Mach边界测试 (暗礁24核心: Mach=1.0和1.5边界)
+    // Mach边界测试 (缺陷24核心: Mach=1.0和1.5边界)
     printf("\n  Mach边界测试:\n");
     float mach_values[] = {0.0f, 0.5f, 0.8f, 0.99f, 1.0f, 1.01f, 1.2f,
                            1.49f, 1.5f, 1.51f, 2.0f, 3.0f, 10.0f};
@@ -68,7 +68,7 @@ void test_reef24_tanh_sigmoid() {
                M, w_trans, w_super, ac.CD0, ac.Cma);
     }
 
-    printf("\n  暗礁24 (tanh替代sigmoid): %s\n\n", all_pass ? "PASS" : "FAIL");
+    printf("\n  缺陷24 (tanh替代sigmoid): %s\n\n", all_pass ? "PASS" : "FAIL");
 }
 
 // =============================================================================
@@ -140,7 +140,7 @@ void test_flip_control() {
     theta_err = std::fmin(theta_err, 2.0f * PI_F - theta_err);
     theta_err *= 180.0f / PI_F;
 
-    printf("\n  暗礁21 (t_switch解析): %s (t_total=%.2fs<%.1fs)\n",
+    printf("\n  缺陷21 (t_switch解析): %s (t_total=%.2fs<%.1fs)\n",
            flip.t_total < T_FLIP_MAX ? "PASS" : "FAIL", flip.t_total, T_FLIP_MAX);
     printf("  翻转精度: %s (theta_err=%.2fdeg<5deg)\n",
            theta_err < 5.0f ? "PASS" : "FAIL", theta_err);
@@ -221,7 +221,7 @@ void test_full_integration() {
     printf("    最终vx: %.1fm/s\n", s.vx);
     printf("    最终theta: %.1fdeg\n", s.theta * 180.0f / PI_F);
 
-    printf("\n  暗礁23 (统一状态结构体): %s (三阶段切换无状态丢失)\n",
+    printf("\n  缺陷23 (统一状态结构体): %s (三阶段切换无状态丢失)\n",
            !kill ? "PASS" : "CHECK");
     printf("  着陆判定: %s (vz<10, |vx|<5, |theta|<15deg)\n\n",
            landing_success ? "PASS" : "FAIL");
@@ -231,15 +231,15 @@ void test_full_integration() {
 // main
 // =============================================================================
 int main() {
-    banner("Belly-Flop Step 7E: C++翻译验证 (暗礁23+24)");
+    banner("Belly-Flop Step 7E: C++翻译验证 (缺陷23+24)");
 
     test_reef24_tanh_sigmoid();
     test_flip_control();
     test_full_integration();
 
     banner("Step 7E C++翻译验证完成");
-    printf("  暗礁23 (统一状态结构体): 见[3]全程集成结果\n");
-    printf("  暗礁24 (tanh替代sigmoid): 见[1]数值稳定性结果\n");
+    printf("  缺陷23 (统一状态结构体): 见[3]全程集成结果\n");
+    printf("  缺陷24 (tanh替代sigmoid): 见[1]数值稳定性结果\n");
     printf("\n  C++翻译完成, 所有模块与Python一致 (tanh替代sigmoid)\n");
 
     return 0;

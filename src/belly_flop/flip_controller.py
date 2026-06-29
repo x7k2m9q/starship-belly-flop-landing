@@ -3,8 +3,8 @@ Belly-Flop Step 7D: 翻转段 bang-bang + PD + 前馈补偿.
 =====================================================
 理论方案 9.0-Final Step 7D.
 
-暗礁21: bang-bang切换时间试凑 → t_switch=sqrt(Iyy·Δθ/M_max) 解析
-暗礁22: 翻转中纯解析模型 → 数值积分前馈+PD反馈+前馈力矩补偿
+缺陷21: bang-bang切换时间试凑 → t_switch=sqrt(Iyy·Δθ/M_max) 解析
+缺陷22: 翻转中纯解析模型 → 数值积分前馈+PD反馈+前馈力矩补偿
 
 控制策略 (三项叠加, 全部转换为力矩再除以襟翼效率):
   1. bang-bang 期望轨迹: θ_ref(t) 梯形速度剖面
@@ -12,7 +12,7 @@ Belly-Flop Step 7D: 翻转段 bang-bang + PD + 前馈补偿.
      - t_switch < t < t_total: 匀减速翻转 (θ̈_ref = +α_max)
      - t_switch = t_target/2, α_max = |Δθ|/t_switch²
 
-  2. 标称前馈力矩 (暗礁22核心: 数值积分前馈):
+  2. 标称前馈力矩 (缺陷22核心: 数值积分前馈):
      - M_nominal = Iyy · θ̈_ref
      - 这是驱动火箭按bang-bang加速度运动所需的力矩
      - 缺失此项 → PD误差极小(bang-bang起步慢) → 火箭不翻转 → trim失衡 → 失控
@@ -51,7 +51,7 @@ from .aero_model import (
 THETA_BELLY = np.deg2rad(85.0)    # 翻转起始角 (belly姿态)
 THETA_LAND = np.deg2rad(0.0)      # 翻转终止角 (着陆姿态)
 T_FLIP_MAX = 8.0                  # s, 翻转超时Kill阈值
-T_FLIP_TARGET = 3.5               # s, 目标翻转时间 (工程直觉: 3-5s, 太快PD跟踪不上)
+T_FLIP_TARGET = 3.5               # s, 目标翻转时间 (工程判断: 3-5s, 太快PD跟踪不上)
 
 # bang-bang参数
 M_MARGIN = 0.8                    # 力矩裕度 (用80%最大力矩, 留余量)
@@ -97,9 +97,9 @@ def compute_max_flip_torque(state, m_fuel):
 
 def compute_t_switch(theta0, thetaf, state, m_fuel, t_target=T_FLIP_TARGET):
     """
-    暗礁21: bang-bang切换时间解析公式.
+    缺陷21: bang-bang切换时间解析公式.
 
-    工程直觉: 翻转时间太短(如0.25s)会导致PD跟踪不上、过冲失控.
+    工程判断: 翻转时间太短(如0.25s)会导致PD跟踪不上、过冲失控.
     用目标翻转时间T_FLIP_TARGET(3.5s)反推所需力矩, 而非用最大力矩.
 
     对称bang-bang (加速t_switch, 减速t_switch):
@@ -114,7 +114,7 @@ def compute_t_switch(theta0, thetaf, state, m_fuel, t_target=T_FLIP_TARGET):
     M_max, Q, alpha, M = compute_max_flip_torque(state, m_fuel)
     Iyy = get_Iyy(m_fuel)
 
-    # 目标翻转时间 (工程直觉: 3-5s, 太快PD跟踪不上)
+    # 目标翻转时间 (工程判断: 3-5s, 太快PD跟踪不上)
     t_total = t_target
     t_switch = t_total / 2.0
 
@@ -190,7 +190,7 @@ def bangbang_theta_acceleration(t, t_switch, t_total, alpha_max):
 
 def compute_feedforward_torque(state, theta_ref, m_fuel):
     """
-    暗礁22: 前馈力矩补偿 (补偿气动力矩残余).
+    缺陷22: 前馈力矩补偿 (补偿气动力矩残余).
 
     trim在α_ref处配平, 实际α偏离α_ref时有残余力矩.
     M_residual = M_aero(α) - M_aero(α_ref)
@@ -249,7 +249,7 @@ class FlipController:
 
     def plan(self, state, m_fuel):
         """
-        规划bang-bang翻转轨迹 (暗礁21: 解析t_switch).
+        规划bang-bang翻转轨迹 (缺陷21: 解析t_switch).
         """
         self.t_switch, self.t_total, self.alpha_max, self.M_max = compute_t_switch(
             self.theta0, self.thetaf, state[:6], m_fuel)
@@ -293,7 +293,7 @@ class FlipController:
         theta_ref_ddot = bangbang_theta_acceleration(
             self.flip_t, self.t_switch, self.t_total, self.alpha_max)
 
-        # 推力: 翻转段保持T_idle (暗礁12: 防T=0使TVC无效)
+        # 推力: 翻转段保持T_idle (缺陷12: 防T=0使TVC无效)
         T = T_IDLE
 
         V = np.sqrt(vx ** 2 + vz ** 2)
@@ -303,7 +303,7 @@ class FlipController:
             Q = 0.5 * rho * V ** 2 * S_REF
             Iyy = get_Iyy(m_fuel)
 
-            # ============ 1. 标称前馈力矩 (暗礁22: 数值积分前馈) ============
+            # ============ 1. 标称前馈力矩 (缺陷22: 数值积分前馈) ============
             # M_nominal = Iyy · θ̈_ref
             # 这是驱动火箭按bang-bang加速度运动所需的力矩
             M_nominal = Iyy * theta_ref_ddot
@@ -316,7 +316,7 @@ class FlipController:
             e_q = theta_ref_dot - q
             M_pd = Iyy * (WN_TRACK ** 2 * e_theta + 2.0 * ZETA_TRACK * WN_TRACK * e_q)
 
-            # ============ 3. 前馈力矩补偿 (暗礁22: 补偿气动残余) ============
+            # ============ 3. 前馈力矩补偿 (缺陷22: 补偿气动残余) ============
             M_ff = compute_feedforward_torque(state[:6], theta_ref, m_fuel)
 
             # ============ 总额外襟翼偏转 ============

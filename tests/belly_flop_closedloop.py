@@ -6,7 +6,7 @@ Belly-Flop Step 7B 闭环验证.
 验证项:
   1. 三阶段切换正确 (belly→flip→landing)
   2. 不触发Kill (翻转后h>800m, 能量检查通过)
-  3. PD主动阻尼解决暗礁3 (θ跟踪有界, 不发散)
+  3. PD主动阻尼解决缺陷3 (θ跟踪有界, 不发散)
   4. 着陆成功 (vz<10m/s, |vx|<5m/s, |theta|<15°)
 
 初始条件:
@@ -119,28 +119,28 @@ def run_closed_loop_test():
         print(f"  FAILED: 硬着陆 (vz={vz[-1]:.1f}, vx={vx[-1]:.1f}, θ={np.degrees(theta[-1]):.1f}°)")
         status = 'FAILED'
 
-    # 暗礁检查
-    print(f"\n暗礁检查:")
-    # 暗礁7: 阶段切换姿态阶跃
+    # 缺陷检查
+    print(f"\n缺陷检查:")
+    # 缺陷7: 阶段切换姿态阶跃
     if len(phase_changes) > 0:
         max_theta_jump = 0
         for i in range(1, len(theta_cmd)):
             jump = abs(theta_cmd[i] - theta_cmd[i-1])
             if jump > max_theta_jump:
                 max_theta_jump = jump
-        print(f"  暗礁7 (阶段切换阶跃): max|Δθ_cmd/step| = {np.degrees(max_theta_jump):.3f}° "
+        print(f"  缺陷7 (阶段切换阶跃): max|Δθ_cmd/step| = {np.degrees(max_theta_jump):.3f}° "
               f"({'PASS' if np.degrees(max_theta_jump) < 5.0 else 'CHECK'})")
 
-    # 暗礁3: PD阻尼效果 (θ跟踪误差)
+    # 缺陷3: PD阻尼效果 (θ跟踪误差)
     theta_err = theta_cmd - theta
     theta_err_deg = np.degrees(theta_err)
     # 归一化
     theta_err_deg = np.array([(e + 180) % 360 - 180 for e in theta_err_deg])
     max_err = np.max(np.abs(theta_err_deg))
-    print(f"  暗礁3 (PD阻尼): max|θ_cmd-θ| = {max_err:.2f}° "
+    print(f"  缺陷3 (PD阻尼): max|θ_cmd-θ| = {max_err:.2f}° "
           f"({'PASS' if max_err < 15.0 else 'CHECK'})")
 
-    # 暗礁9: 能量检查
+    # 缺陷9: 能量检查
     if len(phase_changes) >= 1:
         # 找flip→landing切换点
         for tc, p1, p2, h_tc, v_tc, th_tc in phase_changes:
@@ -149,7 +149,7 @@ def run_closed_loop_test():
                 a_needed = v_tc ** 2 / (2 * h_tc)
                 a_avail = T_MAX / m_tc - 9.81
                 ratio = a_needed / a_avail
-                print(f"  暗礁9 (能量检查@landing): a_needed={a_needed:.1f}, "
+                print(f"  缺陷9 (能量检查@landing): a_needed={a_needed:.1f}, "
                       f"a_avail={a_avail:.1f}, ratio={ratio:.2f} "
                       f"({'PASS' if ratio < 0.7 else 'KILL'})")
 

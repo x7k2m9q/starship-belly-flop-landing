@@ -3,10 +3,10 @@ Step 7C-2: θ_cmd控制量 + 线性气动 (验证可控性).
 ================================================
 验证目标:
   1. SCvx能用θ_cmd控制轨迹 (Kill: θ_cmd不合理→线性化有问题)
-  2. 二阶跟踪动力学防止1步跳80° (暗礁13)
-  3. T·sin(θ) Taylor展开正确 (暗礁14)
-  4. CD线性化有效 (暗礁15)
-  5. 信赖域约束有效 (暗礁16)
+  2. 二阶跟踪动力学防止1步跳80° (缺陷13)
+  3. T·sin(θ) Taylor展开正确 (缺陷14)
+  4. CD线性化有效 (缺陷15)
+  5. 信赖域约束有效 (缺陷16)
 
 状态: X = [x, h, vx, vz, θ, q] (6维)
 控制: U = [T, θ_cmd] (2维)
@@ -51,8 +51,8 @@ def run_7c2_verification():
     N = int(tgo / dt)
     print(f'时域: N={N}步, dt={dt}s')
 
-    # ============ 暗礁13-15验证: Jacobian ============
-    print('\n--- 暗礁13-15验证: Jacobian分析 ---')
+    # ============ 缺陷13-15验证: Jacobian ============
+    print('\n--- 缺陷13-15验证: Jacobian分析 ---')
     test_state = X0.copy()
     test_U = np.array([T_IDLE, np.deg2rad(80.0)])
     A, B = jacobian_7c2(test_state, test_U, M_FUEL_INIT)
@@ -68,9 +68,9 @@ def run_7c2_verification():
     m = get_mass(M_FUEL_INIT)
     print(f'    d(dvx)/d(T) = B[2,0] = {B[2,0]:.6e} (应为sin(θ)/m={sin_theta/m:.6e})')
     print(f'    d(dvz)/d(T) = B[3,0] = {B[3,0]:.6e} (应为-cos(θ)/m={-cos_theta/m:.6e})')
-    print(f'  暗礁13 (二阶跟踪): θ动力学正确 (PASS)')
-    print(f'  暗礁14 (T·sin(θ) Taylor): B矩阵匹配 (PASS)')
-    print(f'  暗礁15 (CD线性化): 数值Jacobian自动处理 (PASS)')
+    print(f'  缺陷13 (二阶跟踪): θ动力学正确 (PASS)')
+    print(f'  缺陷14 (T·sin(θ) Taylor): B矩阵匹配 (PASS)')
+    print(f'  缺陷15 (CD线性化): 数值Jacobian自动处理 (PASS)')
 
     # ============ SCvx 求解 ============
     print('\n--- SCvx 求解 ---')
@@ -96,26 +96,26 @@ def run_7c2_verification():
     if 'reason' in info:
         print(f'  失败原因: {info["reason"]}')
 
-    # ============ 暗礁检查 ============
-    print('\n--- 暗礁检查 ---')
+    # ============ 缺陷检查 ============
+    print('\n--- 缺陷检查 ---')
 
     if U_opt is not None:
-        # 暗礁13: θ_cmd不1步跳80°
+        # 缺陷13: θ_cmd不1步跳80°
         theta_cmd_diffs = np.abs(np.diff(U_opt[1, :]))
         max_jump = np.max(theta_cmd_diffs)
-        print(f'  暗礁13 (θ_cmd不1步跳): max|Δθ_cmd/step|={np.degrees(max_jump):.2f}° '
+        print(f'  缺陷13 (θ_cmd不1步跳): max|Δθ_cmd/step|={np.degrees(max_jump):.2f}° '
               f'({"PASS" if max_jump < np.deg2rad(20) else "CHECK"})')
 
-        # 暗礁14: T·sin(θ) Taylor (B矩阵已验证)
-        print(f'  暗礁14 (T·sin(θ) Taylor): Jacobian验证PASS')
+        # 缺陷14: T·sin(θ) Taylor (B矩阵已验证)
+        print(f'  缺陷14 (T·sin(θ) Taylor): Jacobian验证PASS')
 
-        # 暗礁15: CD线性化 (数值Jacobian自动)
-        print(f'  暗礁15 (CD线性化): 数值JacobianPASS')
+        # 缺陷15: CD线性化 (数值Jacobian自动)
+        print(f'  缺陷15 (CD线性化): 数值JacobianPASS')
 
-        # 暗礁16: 信赖域
+        # 缺陷16: 信赖域
         T_range = np.max(U_opt[0]) - np.min(U_opt[0])
         theta_cmd_range = np.max(U_opt[1]) - np.min(U_opt[1])
-        print(f'  暗礁16 (信赖域): T范围={T_range/1e3:.0f}kN, '
+        print(f'  缺陷16 (信赖域): T范围={T_range/1e3:.0f}kN, '
               f'θ_cmd范围={np.degrees(theta_cmd_range):.1f}°')
 
         # θ_cmd合理性
@@ -272,11 +272,11 @@ def _write_result(converged, info, sim, X_opt, U_opt, solver, X_term):
             fuel = M_FUEL_INIT - sim['m_fuel_final']
             f.write(f'  燃料: {fuel:.0f}kg ({fuel/M_FUEL_INIT*100:.1f}%)\n')
 
-        f.write('\n暗礁检查:\n')
-        f.write(f'  暗礁13 (二阶跟踪): θ_cmd不1步跳80°\n')
-        f.write(f'  暗礁14 (T·sin(θ) Taylor): Jacobian验证\n')
-        f.write(f'  暗礁15 (CD线性化): 数值Jacobian\n')
-        f.write(f'  暗礁16 (信赖域): |Δθ|<10°, |Δv|<30\n')
+        f.write('\n缺陷检查:\n')
+        f.write(f'  缺陷13 (二阶跟踪): θ_cmd不1步跳80°\n')
+        f.write(f'  缺陷14 (T·sin(θ) Taylor): Jacobian验证\n')
+        f.write(f'  缺陷15 (CD线性化): 数值Jacobian\n')
+        f.write(f'  缺陷16 (信赖域): |Δθ|<10°, |Δv|<30\n')
 
         f.write('\n' + '=' * 70 + '\n')
         if converged:

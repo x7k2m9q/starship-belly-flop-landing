@@ -10,12 +10,12 @@ Step 7C-1: 固定 α 的 SCvx 框架验证.
   初始: h=10km, x=0, vz=500m/s, vx=0, α=80°固定
   终端: h=3km, x=0, V<250m/s (belly→flip切换条件)
   控制: T∈[T_idle, T_max], α=80°恒定
-  tgo = 1.2*sqrt(h^2+x^2)/V (暗礁11)
+  tgo = 1.2*sqrt(h^2+x^2)/V (缺陷11)
 
-暗礁检查:
-  暗礁10: α固定时∂aero/∂α=0, Jacobian只保留∂aero/∂v链式法则
-  暗礁11: tgo=1.2*sqrt(h^2+x^2)/V (非垂直速度公式)
-  暗礁12: T下限T_idle (防T=0使TVC无效)
+缺陷检查:
+  缺陷10: α固定时∂aero/∂α=0, Jacobian只保留∂aero/∂v链式法则
+  缺陷11: tgo=1.2*sqrt(h^2+x^2)/V (非垂直速度公式)
+  缺陷12: T下限T_idle (防T=0使TVC无效)
 """
 import sys, os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
@@ -46,7 +46,7 @@ def run_7c1_verification():
     # 终端目标: belly→flip切换点
     X_term = np.array([0.0, 3000.0, 0.0, 200.0])  # h=3km, vz=200m/s
 
-    # tgo = 1.2*sqrt(h^2+x^2)/V (暗礁11)
+    # tgo = 1.2*sqrt(h^2+x^2)/V (缺陷11)
     h0, x0, V0 = 10000.0, 0.0, 500.0
     tgo = 1.2 * np.sqrt(h0 ** 2 + x0 ** 2) / V0
     print(f'\n初始状态: h={X0[1]/1000:.0f}km, x={X0[0]:.0f}m, vz={X0[3]:.0f}m/s, vx={X0[2]:.0f}m/s')
@@ -58,8 +58,8 @@ def run_7c1_verification():
     N = int(tgo / dt)
     print(f'时域: N={N}步, dt={dt}s, 总时长={N*dt:.1f}s')
 
-    # ============ 暗礁10验证: α固定时∂aero/∂α=0 ============
-    print('\n--- 暗礁10验证: α固定时Jacobian ---')
+    # ============ 缺陷10验证: α固定时∂aero/∂α=0 ============
+    print('\n--- 缺陷10验证: α固定时Jacobian ---')
     test_state = X0.copy()
     test_T = T_IDLE
     from src.belly_flop.scvx import jacobian_7c1
@@ -68,7 +68,7 @@ def run_7c1_verification():
     for i in range(4):
         print(f'    [{A[i,0]:+.4e} {A[i,1]:+.4e} {A[i,2]:+.4e} {A[i,3]:+.4e}]')
     print(f'  B矩阵 (4×1): [{B[0,0]:+.4e} {B[1,0]:+.4e} {B[2,0]:+.4e} {B[3,0]:+.4e}]^T')
-    print(f'  注: α固定→θ=α+γ, θ不独立, Jacobian只含∂f/∂[x,h,vx,vz] (暗礁10✓)')
+    print(f'  注: α固定→θ=α+γ, θ不独立, Jacobian只含∂f/∂[x,h,vx,vz] (缺陷10✓)')
 
     # ============ SCvx 求解 ============
     print('\n--- SCvx 求解 ---')
@@ -94,19 +94,19 @@ def run_7c1_verification():
     if 'reason' in info:
         print(f'  失败原因: {info["reason"]}')
 
-    # ============ 暗礁检查 ============
-    print('\n--- 暗礁检查 ---')
+    # ============ 缺陷检查 ============
+    print('\n--- 缺陷检查 ---')
 
-    # 暗礁10: α固定Jacobian
-    print(f'  暗礁10 (α固定Jacobian): ∂aero/∂α=0, 4维状态 (PASS)')
+    # 缺陷10: α固定Jacobian
+    print(f'  缺陷10 (α固定Jacobian): ∂aero/∂α=0, 4维状态 (PASS)')
 
-    # 暗礁11: tgo公式
-    print(f'  暗礁11 (tgo公式): tgo=1.2*sqrt(h^2+x^2)/V={tgo:.1f}s (PASS)')
+    # 缺陷11: tgo公式
+    print(f'  缺陷11 (tgo公式): tgo=1.2*sqrt(h^2+x^2)/V={tgo:.1f}s (PASS)')
 
-    # 暗礁12: T下限T_idle
+    # 缺陷12: T下限T_idle
     T_min_opt = np.min(U_opt) if U_opt is not None else 0
     T_max_opt = np.max(U_opt) if U_opt is not None else 0
-    print(f'  暗礁12 (T下限): min(T)={T_min_opt/1e3:.0f}kN >= T_idle={T_IDLE/1e3:.0f}kN '
+    print(f'  缺陷12 (T下限): min(T)={T_min_opt/1e3:.0f}kN >= T_idle={T_IDLE/1e3:.0f}kN '
           f'({"PASS" if T_min_opt >= T_IDLE - 1 else "FAIL"})')
 
     # 收敛性
@@ -273,11 +273,11 @@ def _write_result(converged, info, sim, X_opt, U_opt, solver, X_term):
             fuel_used = M_FUEL_INIT - sim['m_fuel_final']
             f.write(f'  燃料消耗: {fuel_used:.0f}kg ({fuel_used/M_FUEL_INIT*100:.1f}%)\n')
 
-        f.write('\n暗礁检查:\n')
-        f.write(f'  暗礁10 (α固定Jacobian): ∂aero/∂α=0, 4维状态 (PASS)\n')
-        f.write(f'  暗礁11 (tgo公式): 1.2*sqrt(h^2+x^2)/V (PASS)\n')
+        f.write('\n缺陷检查:\n')
+        f.write(f'  缺陷10 (α固定Jacobian): ∂aero/∂α=0, 4维状态 (PASS)\n')
+        f.write(f'  缺陷11 (tgo公式): 1.2*sqrt(h^2+x^2)/V (PASS)\n')
         T_min = np.min(U_opt) if U_opt is not None else 0
-        f.write(f'  暗礁12 (T下限): min(T)={T_min/1e3:.0f}kN >= T_idle ({"PASS" if T_min >= T_IDLE-1 else "FAIL"})\n')
+        f.write(f'  缺陷12 (T下限): min(T)={T_min/1e3:.0f}kN >= T_idle ({"PASS" if T_min >= T_IDLE-1 else "FAIL"})\n')
 
         f.write('\n' + '=' * 70 + '\n')
         if converged:

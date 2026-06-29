@@ -3,8 +3,8 @@ Belly-Flop Step 7E: 全程集成控制器.
 =====================================
 理论方案 9.0-Final Step 7E.
 
-暗礁23: 三阶段切换状态丢失 → 统一状态结构体, 只改控制器
-暗礁24: C++ sigmoid数值差异 → 用tanh()替代sigmoid (见C++翻译)
+缺陷23: 三阶段切换状态丢失 → 统一状态结构体, 只改控制器
+缺陷24: C++ sigmoid数值差异 → 用tanh()替代sigmoid (见C++翻译)
 
 统一状态结构体 (全阶段一致, 切换时不重置):
   State = [x, h, vx, vz, θ, q, m_fuel]  (7维)
@@ -18,7 +18,7 @@ Belly-Flop Step 7E: 全程集成控制器.
   LANDING: θ_cmd=0°(垂直), T=bang-bang匀减速, PD阻尼
            切换条件: h≤0 (着陆)
 
-关键设计 (暗礁23应对):
+关键设计 (缺陷23应对):
   1. 状态结构体全阶段统一, 切换时只改控制器, 不重置状态
   2. FlipController在FLIP阶段接管, 用当前state初始化plan()
   3. 翻转完成后, LANDING控制器从当前state继续, 无状态丢失
@@ -44,7 +44,7 @@ class IntegratedBellyFlopController:
     """
     Step 7E 全程集成控制器: BELLY → FLIP → LANDING.
 
-    暗礁23: 统一状态结构体, 三阶段切换只改控制器不重置状态.
+    缺陷23: 统一状态结构体, 三阶段切换只改控制器不重置状态.
 
     接口: update(state, dt) -> (T, theta_cmd, d_extra_fwd, d_extra_aft, phase, kill, info)
     """
@@ -77,7 +77,7 @@ class IntegratedBellyFlopController:
         return h_to_land / abs(vz)
 
     def _energy_check(self, state):
-        """能量检查 (暗礁9)."""
+        """能量检查 (缺陷9)."""
         x, h, vx, vz, theta, q, m_fuel = state
         V = np.sqrt(vx ** 2 + vz ** 2)
         m = get_mass(m_fuel)
@@ -98,7 +98,7 @@ class IntegratedBellyFlopController:
         return False, ''
 
     def _ramp_update(self, dt):
-        """2秒斜坡过渡 (暗礁7)."""
+        """2秒斜坡过渡 (缺陷7)."""
         if self.ramp_active:
             self.ramp_t += dt
             alpha = min(1.0, self.ramp_t / RAMP_TRANSITION)
@@ -152,7 +152,7 @@ class IntegratedBellyFlopController:
         return T, theta_cmd
 
     def _compute_pd_damping(self, state, theta_cmd, M):
-        """PD主动阻尼 (暗礁3)."""
+        """PD主动阻尼 (缺陷3)."""
         theta = state[4]
         q = state[5]
         Kp, Kd = pd_gains(M)
@@ -185,7 +185,7 @@ class IntegratedBellyFlopController:
             if tgo <= TGO_FLIP_TRIGGER and V < V_FLIP_TRIGGER and h > H_FLIP_MIN:
                 self.phase = 'FLIP'
                 self.phase_t = 0.0
-                # 暗礁23: 不重置状态, FlipController从当前state初始化
+                # 缺陷23: 不重置状态, FlipController从当前state初始化
                 self.flip_ctrl = FlipController(
                     theta0=theta,  # 从当前theta开始翻转 (非硬编码85°)
                     thetaf=THETA_LAND)
@@ -234,7 +234,7 @@ class IntegratedBellyFlopController:
             d_extra_fwd, d_extra_aft = self._compute_pd_damping(state, theta_cmd, M)
 
         elif self.phase == 'FLIP':
-            # 暗礁23: FlipController接管, 用7D的bang-bang+PD+前馈
+            # 缺陷23: FlipController接管, 用7D的bang-bang+PD+前馈
             T, theta_cmd, d_extra_fwd, d_extra_aft = self.flip_ctrl.control(state, dt)
             # FLIP阶段不需要额外斜坡过渡 (bang-bang本身就是平滑的)
             self.theta_cmd_current = theta_cmd

@@ -9,7 +9,7 @@
 //   - 保留解析气动公式 (sin²α, sin(2α), Mach sigmoid), 与 Python 严格一致.
 //   - 6-DOF 新增: 侧向力 CY(β), 滚转力矩 Cl(β), 偏航力矩 Cn(β).
 //   - 4 片襟翼 (FL/FR/RL/RR) 差动分配公式在 control_allocation_6dof.hpp.
-//   - 暗礁24: tanh 替代 sigmoid (数值稳定, 已在 belly_flop_aero.hpp 验证).
+//   - 缺陷24: tanh 替代 sigmoid (数值稳定, 已在 belly_flop_aero.hpp 验证).
 //
 // 物理参数: 与 Python aero_model_6dof.py 严格一致 (星舰构型)
 // =============================================================================
@@ -110,7 +110,7 @@ inline float get_mass(float m_fuel) {
     return M_DRY + (m_fuel > 0.0f ? m_fuel : 0.0f);
 }
 
-// 暗礁31: 变重力 g(h) = g0 * (R_E/(R_E+h))²
+// 缺陷31: 变重力 g(h) = g0 * (R_E/(R_E+h))²
 inline float gravity(float h) {
     const float r = R_EARTH / (R_EARTH + h);
     return G0_SL * r * r;
@@ -133,7 +133,7 @@ inline InertiaTensor get_inertia_tensor(float m_fuel) {
 }
 
 // =============================================================================
-// 暗礁24: tanh 替代 sigmoid (数值稳定, 已在 belly_flop_aero.hpp 验证)
+// 缺陷24: tanh 替代 sigmoid (数值稳定, 已在 belly_flop_aero.hpp 验证)
 // sigmoid(x) = 0.5 + 0.5*tanh(x/2)
 // =============================================================================
 inline float sigmoid_tanh(float x) {

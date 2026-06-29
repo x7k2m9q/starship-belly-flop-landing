@@ -13,9 +13,9 @@
   2. 每级降级只降级必要功能, 保留最大控制权限
   3. Level 3必须保证"安全坠毁"而非"横飞乱撞"
   4. 状态机单向升级: NOMINAL→L1→L2→L3, 不可降级回退
-     (工程直觉: 故障不会自愈, 降级后按降级模式飞到底)
+     (工程判断: 故障不会自愈, 降级后按降级模式飞到底)
 
-工程直觉:
+工程判断:
   - 雷达多径是瞬态的, 但EKF一旦被污染需要时间恢复 → 拒绝更新比修复更安全
   - 襟翼卡死是永久的, 对侧襟翼锁定后气动对称, TVC补偿力矩
   - tilt>20°时气动已不可控, 唯一选择是关机+落点预测+海上迫降
@@ -270,10 +270,10 @@ class StarshipSafetyHSM:
         # ===============================================================
         theta = state[4]  # 姿态角
 
-        # 工程直觉: BELLY阶段theta=85°是正常的, 不算发散.
+        # 工程判断: BELLY阶段theta=85°是正常的, 不算发散.
         # tilt定义: 翻转开始后(|theta|<45°), |theta|即为tilt.
         #
-        # Phase 9.0修正 (暗礁30): FLIP阶段是intentional maneuver,
+        # Phase 9.0修正 (缺陷30): FLIP阶段是intentional maneuver,
         #   theta从85°→0°必然经过20°-45°区间, 不应触发abort.
         #   仅在LANDING阶段检查tilt (此时theta应接近0°, tilt>20°才是真正发散).
         if phase == 'FLIP':
@@ -304,7 +304,7 @@ class StarshipSafetyHSM:
             result['landing_prediction'] = self.landing_prediction
 
             # 落点预测节流更新: 每 _predict_interval 秒更新一次 (非每步)
-            # 工程直觉: 10ms内落点不会显著变化, 每秒更新足够.
+            # 工程判断: 10ms内落点不会显著变化, 每秒更新足够.
             # 避免每步调用 predict_landing_point (1200步积分) 导致仿真卡死.
             if (t - self._last_predict_t) >= self._predict_interval:
                 self.landing_prediction = predict_landing_point(state)

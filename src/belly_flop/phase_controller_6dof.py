@@ -106,7 +106,7 @@ def compute_max_flip_torque_6dof(state):
 
 def compute_t_switch_6dof(theta0_deg, thetaf_deg, state, m_fuel,
                            t_target=T_FLIP_TARGET):
-    """6DOF bang-bang切换时间解析公式 (暗礁21).
+    """6DOF bang-bang切换时间解析公式 (缺陷21).
 
     返回: (t_switch, t_total, alpha_max, M_max)
     """
@@ -286,7 +286,7 @@ class PhaseController6DOF:
         return h_to_land / abs(vz)
 
     def _energy_check(self, state):
-        """能量检查 (暗礁9)."""
+        """能量检查 (缺陷9)."""
         vel_n = state[3:6]
         V = np.linalg.norm(vel_n)
         h = -state[2]
@@ -309,7 +309,7 @@ class PhaseController6DOF:
         return False, ''
 
     def _ramp_update(self, dt):
-        """2秒斜坡过渡 (暗礁7)."""
+        """2秒斜坡过渡 (缺陷7)."""
         if self.ramp_active:
             self.ramp_t += dt
             alpha = min(1.0, self.ramp_t / RAMP_TRANSITION)

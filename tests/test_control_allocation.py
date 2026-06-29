@@ -3,7 +3,7 @@ Phase 7.0 战役二: 4片襟翼控制分配开环验证
 ==========================================
 验收标准 (理论方案7.0 问题19):
   1. 禁止pinv伪逆, 必须物理推导
-  2. 给定期望力矩, 4片襟翼偏转方向符合物理直觉
+  2. 给定期望力矩, 4片襟翼偏转方向符合物理规律
   3. 分配->验证闭环: 实际力矩误差<1%
   4. 饱和处理: 归一化分配保持力矩方向
 """
@@ -35,7 +35,7 @@ def test_1_pitch_allocation():
     print(f"  FL={np.rad2deg(d_FL):.2f}°, FR={np.rad2deg(d_FR):.2f}°")
     print(f"  RL={np.rad2deg(d_RL):.2f}°, RR={np.rad2deg(d_RR):.2f}°")
 
-    # 物理直觉: 抬头 → 前翼正偏, 后翼负偏
+    # 物理规律: 抬头 → 前翼正偏, 后翼负偏
     ok_fwd = d_FL > 0 and d_FR > 0  # 前翼正偏
     ok_aft = d_RL < 0 and d_RR < 0  # 后翼负偏
     # 前左=前右, 后左=后右 (无滚转/偏航)
@@ -69,7 +69,7 @@ def test_2_roll_allocation():
     print(f"  FL={np.rad2deg(d_FL):.2f}°, FR={np.rad2deg(d_FR):.2f}°")
     print(f"  RL={np.rad2deg(d_RL):.2f}°, RR={np.rad2deg(d_RR):.2f}°")
 
-    # 物理直觉: 正滚转 → FL+RR正偏, FR+RL负偏 (对角线差动)
+    # 物理规律: 正滚转 → FL+RR正偏, FR+RL负偏 (对角线差动)
     ok_fl = d_FL > 0
     ok_rr = d_RR > 0
     ok_fr = d_FR < 0
@@ -102,7 +102,7 @@ def test_3_yaw_allocation():
     print(f"  FL={np.rad2deg(d_FL):.2f}°, FR={np.rad2deg(d_FR):.2f}°")
     print(f"  RL={np.rad2deg(d_RL):.2f}°, RR={np.rad2deg(d_RR):.2f}°")
 
-    # 物理直觉: 正偏航 → 左侧(FL+RL)正偏, 右侧(FR+RR)负偏
+    # 物理规律: 正偏航 → 左侧(FL+RL)正偏, 右侧(FR+RR)负偏
     ok_fl = d_FL > 0
     ok_rl = d_RL > 0
     ok_fr = d_FR < 0

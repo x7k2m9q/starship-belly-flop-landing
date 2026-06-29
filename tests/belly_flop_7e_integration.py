@@ -2,7 +2,7 @@
 Belly-Flop Step 7E: 全程集成验证.
 ================================
 验证目标:
-  1. 暗礁23: 三阶段切换无状态丢失 (BELLY→FLIP→LANDING)
+  1. 缺陷23: 三阶段切换无状态丢失 (BELLY→FLIP→LANDING)
   2. 全程轨迹连续, 切换点无发散
   3. 着陆成功: vz<10m/s, |vx|<5m/s, |θ|<15°
   4. 各阶段控制律正确接管
@@ -31,7 +31,7 @@ def banner(s):
 
 
 def main():
-    banner('Belly-Flop Step 7E: 全程集成验证 (暗礁23: 统一状态结构体)')
+    banner('Belly-Flop Step 7E: 全程集成验证 (缺陷23: 统一状态结构体)')
     print()
 
     # =================================================================
@@ -92,9 +92,9 @@ def main():
     print()
 
     # =================================================================
-    # 2. 阶段切换分析 (暗礁23)
+    # 2. 阶段切换分析 (缺陷23)
     # =================================================================
-    banner('[2] 阶段切换分析 (暗礁23: 统一状态结构体)')
+    banner('[2] 阶段切换分析 (缺陷23: 统一状态结构体)')
 
     # 找到阶段切换点
     phase_transitions = []
@@ -117,7 +117,7 @@ def main():
 
     print()
 
-    # 暗礁23验证: 切换点状态连续性
+    # 缺陷23验证: 切换点状态连续性
     # 检查切换前后theta和q无突变
     reef23_pass = True
     for idx, ph_from, ph_to, t_switch in phase_transitions:
@@ -129,7 +129,7 @@ def main():
                 print(f'  [WARN] {ph_from}→{ph_to}: dtheta={np.degrees(dtheta):.1f}deg/step')
                 reef23_pass = False
 
-    print(f'  暗礁23 (统一状态结构体): {"PASS" if reef23_pass else "FAIL"} '
+    print(f'  缺陷23 (统一状态结构体): {"PASS" if reef23_pass else "FAIL"} '
           f'(切换点无状态突变)')
     print()
 
@@ -270,7 +270,7 @@ def main():
     # =================================================================
     banner('Step 7E 验证总结')
 
-    print(f'  暗礁23 (统一状态结构体): {"PASS" if reef23_pass else "FAIL"} '
+    print(f'  缺陷23 (统一状态结构体): {"PASS" if reef23_pass else "FAIL"} '
           f'(三阶段切换无状态丢失)')
     print(f'  全程轨迹连续: {"PASS" if not history['kill'] or history['landing_success'] else "CHECK"}')
     print(f'  着陆成功: {"PASS" if landing_pass else "FAIL"}')

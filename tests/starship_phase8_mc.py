@@ -218,7 +218,7 @@ def run_single_simulation(seed, verbose=False):
             break
 
         # Level 3 Abort: 关闭发动机, 用落点预测判定结果, 不再继续仿真
-        # 工程直觉: Level 3触发后火箭已失控翻滚, 继续积分只会浪费CPU
+        # 工程判断: Level 3触发后火箭已失控翻滚, 继续积分只会浪费CPU
         # 且翻滚状态下的气动模型已不可信. 落点预测是最佳估计.
         if hsm_result['abort']:
             T_actual = 0.0

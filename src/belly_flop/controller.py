@@ -14,11 +14,11 @@ Belly-Flop 多阶段控制器 (Step 7B).
   FLIP:    θ_cmd从85°→0°(斜坡翻转), T=T_idle, PD阻尼
   LANDING: θ_cmd=0°(垂直), T=bang-bang匀减速, PD阻尼
 
-暗礁应对:
-  暗礁7: 阶段切换姿态阶跃 → 2秒斜坡过渡
-  暗礁8: PID固定增益 → Mach分3段增益调度
-  暗礁9: 翻转后无能量检查 → a_needed=V²/(2h) > 0.7·a_avail → Kill
-  暗礁3: 配平点弱阻尼 → PD主动阻尼 (配平襟翼+额外偏转)
+缺陷应对:
+  缺陷7: 阶段切换姿态阶跃 → 2秒斜坡过渡
+  缺陷8: PID固定增益 → Mach分3段增益调度
+  缺陷9: 翻转后无能量检查 → a_needed=V²/(2h) > 0.7·a_avail → Kill
+  缺陷3: 配平点弱阻尼 → PD主动阻尼 (配平襟翼+额外偏转)
 """
 import numpy as np
 from .aero_model import (
@@ -54,7 +54,7 @@ VZ_LAND_MAX = 10.0                # m/s, 着陆最大垂直速度 (软着陆)
 
 
 # =====================================================================
-# Mach增益调度 (暗礁8: 按Mach分3段, 非调参, 物理依据)
+# Mach增益调度 (缺陷8: 按Mach分3段, 非调参, 物理依据)
 # =====================================================================
 def pd_gains(M):
     """
@@ -107,7 +107,7 @@ class BellyFlopController:
     def _compute_tgo(self, state):
         """
         tgo = (h - H_LAND_MIN) / |vz| (到landing入口的剩余时间).
-        7B阶段用此定义, 7C-1再用1.2·sqrt(h²+x²)/V (暗礁11).
+        7B阶段用此定义, 7C-1再用1.2·sqrt(h²+x²)/V (缺陷11).
         物理含义: 假设匀速下降到landing入口h=500m的时间.
         """
         x, h, vx, vz = state[0], state[1], state[2], state[3]
@@ -120,7 +120,7 @@ class BellyFlopController:
 
     def _energy_check(self, state):
         """
-        能量检查 (暗礁9).
+        能量检查 (缺陷9).
         a_needed = V²/(2·h): 到地面减速到0需要的加速度
         a_avail = T_max/m - g: 最大制动加速度
         a_needed > 0.7·a_avail → Kill (推力不足)
@@ -145,7 +145,7 @@ class BellyFlopController:
         return False, ''
 
     def _ramp_update(self, dt):
-        """2秒斜坡过渡 (暗礁7: 防阶段切换姿态阶跃)."""
+        """2秒斜坡过渡 (缺陷7: 防阶段切换姿态阶跃)."""
         if self.ramp_active:
             self.ramp_t += dt
             alpha = min(1.0, self.ramp_t / RAMP_TRANSITION)
@@ -185,7 +185,7 @@ class BellyFlopController:
         """
         LANDING阶段: θ_cmd动态倾斜阻尼水平速度, T=bang-bang匀减速.
 
-        推力策略 (工程直觉, 非调参):
+        推力策略 (工程判断, 非调参):
           1. 上升(vz<0): T=0, 让重力拉回 (防推力过大持续上升)
           2. 下降(vz≥0): 匀减速剖面
              a_brake = (vz² - VZ_LAND_TARGET²) / (2·h)
@@ -194,7 +194,7 @@ class BellyFlopController:
 
         姿态策略:
           θ_cmd = -0.5·arctan2(vx, |vz|), 限幅±10°
-          向水平速度反方向倾斜, 推力水平分量阻尼vx (工程直觉: 着陆需消水平速度)
+          向水平速度反方向倾斜, 推力水平分量阻尼vx (工程判断: 着陆需消水平速度)
         """
         x, h, vx, vz, theta, q, m_fuel = state
         m = get_mass(m_fuel)
@@ -223,7 +223,7 @@ class BellyFlopController:
 
     def _compute_pd_damping(self, state, theta_cmd, M):
         """
-        PD主动阻尼 (暗礁3: 解决配平点弱阻尼).
+        PD主动阻尼 (缺陷3: 解决配平点弱阻尼).
 
         额外襟翼偏转 = Kp·(θ_cmd - θ) + Kd·(-q)
         前后翼同向偏转提供俯仰力矩.
@@ -288,7 +288,7 @@ class BellyFlopController:
         elif self.phase == 'LANDING':
             self.landing_t += dt
 
-        # ============ 能量检查 (暗礁9, 仅FLIP后高空) ============
+        # ============ 能量检查 (缺陷9, 仅FLIP后高空) ============
         # FLIP阶段全程检查; LANDING阶段仅h>200m检查 (低空committed to landing)
         if self.phase == 'FLIP' or (self.phase == 'LANDING' and h > 200.0):
             kill, reason = self._energy_check(state)
@@ -304,7 +304,7 @@ class BellyFlopController:
         else:  # LANDING
             T, theta_cmd_target = self._landing_control(state)
 
-        # ============ 2秒斜坡过渡 (暗礁7) ============
+        # ============ 2秒斜坡过渡 (缺陷7) ============
         # FLIP阶段内部已经是斜坡, 不需要额外过渡
         if self.phase == 'FLIP':
             self.theta_cmd_current = theta_cmd_target
@@ -318,7 +318,7 @@ class BellyFlopController:
 
         theta_cmd = self.theta_cmd_current
 
-        # ============ PD主动阻尼 (暗礁3) ============
+        # ============ PD主动阻尼 (缺陷3) ============
         d_extra_fwd, d_extra_aft = self._compute_pd_damping(state, theta_cmd, M)
 
         info['theta_cmd'] = theta_cmd

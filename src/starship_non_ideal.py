@@ -8,7 +8,7 @@
   2. RaptorIgnitionTransient: 猛禽2代点火瞬态(50ms尖峰→100ms凹陷→稳态)
   3. TVCDelay: TVC喷管纯延迟(80ms)
 
-工程直觉:
+工程判断:
   - 死区导致大攻角配平点(α=85°)附近高频极限环振荡
   - 点火瞬态推力偏差导致翻转角加速度失控
   - TVC延迟导致二阶跟踪动力学(ωn=2)姿态超调
@@ -39,7 +39,7 @@ class FlapServoNonIdeal:
 
       实际输出 = α·x + (1-α)·z  (标准Bouc-Wen: α=线性分量比)
 
-    Phase 9.0修正 (暗礁29):
+    Phase 9.0修正 (缺陷29):
       原模型: output = x - z, gamma=-0.5 → beta+gamma=0 → z无界 → z追踪x → output≈0
       这导致执行器完全阻塞低频信号, 物理上不可能(真实襟翼能保持位置).
       修正: (1) gamma=+0.5 (标准符号, beta+gamma=1.0>0, z有界)

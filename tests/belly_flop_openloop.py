@@ -284,7 +284,7 @@ def run_scenario_3():
         status = f"MARGINAL (阻尼比{zeta_est:.2f}<0.3, 弱阻尼)"
     elif amp_ratio < 1.1 and not diverged:
         # 振幅有界, 弱阻尼/极限环
-        status = f"MARGINAL (弱阻尼ζ={zeta_est:.3f}, 振幅有界, 暗礁3: sin(2*85°)≈0.17)"
+        status = f"MARGINAL (弱阻尼ζ={zeta_est:.3f}, 振幅有界, 缺陷3: sin(2*85°)≈0.17)"
     else:
         status = f"FAILED (阻尼比{zeta_est:.3f}, 振幅增长)"
 
@@ -439,7 +439,7 @@ def main():
     print(f"          sin^2(35)=0.33 << sin^2(80)=0.97, 阻力系数低一半.")
     print(f"          90%目标从424m/s到134m/s物理不可达(终端速度~230m/s)")
     print(f"  场景3: 弱阻尼zeta={info3['zeta']:.3f}, 振幅比{info3['amp_ratio']:.3f}(有界)")
-    print(f"          暗礁3: sin(2*85deg)=0.17, 配平点附近气动敏感度消失")
+    print(f"          缺陷3: sin(2*85deg)=0.17, 配平点附近气动敏感度消失")
     print(f"          这是物理本质, 非bug, 需在论文中讨论")
 
     return results
@@ -481,7 +481,7 @@ def _write_summary_to_file(results, r1, r2, r3, info1, info2, info3, s1, s2, s3)
     f.write(f"          sin^2(35)=0.33 << sin^2(80)=0.97, 阻力系数低一半.\n")
     f.write(f"          90%目标从424m/s到134m/s物理不可达(终端速度~230m/s)\n")
     f.write(f"  场景3: 弱阻尼zeta={info3['zeta']:.3f}, 振幅比{info3['amp_ratio']:.3f}(有界)\n")
-    f.write(f"          暗礁3: sin(2*85deg)=0.17, 配平点附近气动敏感度消失\n")
+    f.write(f"          缺陷3: sin(2*85deg)=0.17, 配平点附近气动敏感度消失\n")
     f.write(f"          这是物理本质, 非bug, 需在论文中讨论\n")
     f.flush()
 

@@ -18,13 +18,13 @@
 //   2. 推力在 body 系沿 +Xb, 含 TVC 偏转; 转到 NED 系
 //   3. 重力在 NED 系 [0,0,m*g]
 //   4. 四元数运动学: qdot = 0.5 * q ⊗ [0, omega_b]
-//   5. 欧拉方程: I * domega/dt = M - omega × (I * omega)   ← 暗礁33: 陀螺耦合
+//   5. 欧拉方程: I * domega/dt = M - omega × (I * omega)   ← 缺陷33: 陀螺耦合
 //   6. 质心漂移: 燃料消耗导致惯量变化
 //
-// 暗礁清单 (批判性参考 Phase 11 方案):
-//   暗礁31: 变重力 g(h) = g0 * (R_E/(R_E+h))²  ← 已在 aero_6dof.hpp 实现
-//   暗礁32: RK4 每步后四元数归一化 (防数值漂移)
-//   暗礁33: 陀螺耦合项 omega × (I*omega) 必须保留 (禁简化为 I*domega=M)
+// 缺陷清单 (批判性参考 Phase 11 方案):
+//   缺陷31: 变重力 g(h) = g0 * (R_E/(R_E+h))²  ← 已在 aero_6dof.hpp 实现
+//   缺陷32: RK4 每步后四元数归一化 (防数值漂移)
+//   缺陷33: 陀螺耦合项 omega × (I*omega) 必须保留 (禁简化为 I*domega=M)
 //
 // 猎鹰9号 C++ 移植血泪教训 (开发日志.md):
 //   "omega 反馈通道丢失, PD 退化为 P, 姿态发散 (0.6°→65.8° at t=14)"
@@ -223,7 +223,7 @@ inline void quat_kinematics(const Quaternion& q, const Vec3f& omega,
 //      dp/dt = v
 //      dv/dt = (F_n + F_gravity) / m
 //      dq/dt = 0.5 * q ⊗ [0, omega]   ← 四元数运动学
-//      domega/dt = I^{-1} (M - omega × (I*omega))   ← 欧拉方程 (暗礁33)
+//      domega/dt = I^{-1} (M - omega × (I*omega))   ← 欧拉方程 (缺陷33)
 //      dm/dt = -T / (ISP * G0_ISP)
 // =============================================================================
 inline State6DOF state_derivative(const State6DOF& state, float T_cmd,
@@ -244,7 +244,7 @@ inline State6DOF state_derivative(const State6DOF& state, float T_cmd,
     float m = get_mass(m_fuel);
     InertiaTensor I = get_inertia_tensor(m_fuel);
     float h = -pos_n[2];                 // 高度 = -pz (NED: pz 负=高度正)
-    float g = gravity(h);                // 暗礁31: 变重力
+    float g = gravity(h);                // 缺陷31: 变重力
 
     // 旋转矩阵 C_bn (b->n)
     Mat3f C_bn = q.to_rotmat();
@@ -318,7 +318,7 @@ inline State6DOF state_derivative(const State6DOF& state, float T_cmd,
     d.data[8]  = dq[2];
     d.data[9]  = dq[3];
 
-    // 欧拉方程: I * domega/dt = M - omega × (I * omega)   ← 暗礁33: 陀螺耦合
+    // 欧拉方程: I * domega/dt = M - omega × (I * omega)   ← 缺陷33: 陀螺耦合
     // I 为对角阵, I*omega 可逐元素计算; I^{-1} 同理
     Vec3f I_omega;
     I_omega[0] = I.Ixx * omega_b[0];
@@ -343,7 +343,7 @@ inline State6DOF state_derivative(const State6DOF& state, float T_cmd,
 // RK4 单步积分 (与 Python rk4_step_6dof 严格一致)
 // =============================================================================
 // 每步结束后:
-//   1. 四元数归一化 (暗礁32: 防数值漂移)
+//   1. 四元数归一化 (缺陷32: 防数值漂移)
 //   2. 燃料非负
 // =============================================================================
 inline State6DOF rk4_step(const State6DOF& state, float T_cmd,
@@ -361,7 +361,7 @@ inline State6DOF rk4_step(const State6DOF& state, float T_cmd,
 
     State6DOF new_state = state + (dt / 6.0f) * (k1 + 2.0f * k2 + 2.0f * k3 + k4);
 
-    // 暗礁32: 四元数归一化 (防数值漂移)
+    // 缺陷32: 四元数归一化 (防数值漂移)
     Quaternion q_new(new_state.data[6], new_state.data[7],
                      new_state.data[8], new_state.data[9]);
     q_new.normalize();

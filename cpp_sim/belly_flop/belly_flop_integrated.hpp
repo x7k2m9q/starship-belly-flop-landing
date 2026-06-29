@@ -1,7 +1,7 @@
 // =============================================================================
 // belly_flop_integrated.hpp - 全程集成控制器 (C++翻译, Step 7E)
 // =============================================================================
-// 暗礁23: 统一状态结构体, 三阶段切换只改控制器不重置状态
+// 缺陷23: 统一状态结构体, 三阶段切换只改控制器不重置状态
 // BELLY → FLIP → LANDING
 //
 // 对应 Python: src/belly_flop/integrated_controller.py
@@ -156,7 +156,7 @@ public:
             if (tgo <= TGO_FLIP_TRIGGER && V < V_FLIP_TRIGGER && s.h > H_FLIP_MIN) {
                 phase = "FLIP";
                 phase_t = 0.0f;
-                // 暗礁23: 从当前theta初始化FlipController
+                // 缺陷23: 从当前theta初始化FlipController
                 flip_ctrl = FlipController(s.theta, THETA_LAND_F);
                 flip_ctrl.plan(s);
                 flip_initialized = true;

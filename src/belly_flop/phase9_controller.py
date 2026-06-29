@@ -1,18 +1,18 @@
 """
 Phase 9.0: 星舰工程级死区补偿控制器
 =====================================
-理论方案 6.0 (Phase 9.0) — 跨越"暗礁27/28/29"
+理论方案 6.0 (Phase 9.0) — 跨越"缺陷27/28/29"
 
-暗礁回顾:
-  暗礁27 (Phase 8.0): alpha=85°时Cm=0, trim flap=0°,
+缺陷回顾:
+  缺陷27 (Phase 8.0): alpha=85°时Cm=0, trim flap=0°,
     死区(±0.5°)零化所有PD阻尼指令, theta在10秒内从85°降到43°.
-  暗礁28 (Phase 9.0初): Bouc-Wen(A=1.0, gamma=-0.5)完全阻塞恒定信号
+  缺陷28 (Phase 9.0初): Bouc-Wen(A=1.0, gamma=-0.5)完全阻塞恒定信号
     → 偏置绕过执行器(bias_after_actuator) → 但PD仍被阻塞
-  暗礁29 (Phase 9.0终): Bouc-Wen模型参数bug
+  缺陷29 (Phase 9.0终): Bouc-Wen模型参数bug
     beta+gamma=0 → z无界 → z追踪x → output≈0 (所有低频信号被阻塞)
     修正: gamma=+0.5 (beta+gamma=1.0>0, z有界), alpha=0.3 (位置保持)
 
-三层递进补偿方案 (暗礁29修复后, 偏置可穿过执行器):
+三层递进补偿方案 (缺陷29修复后, 偏置可穿过执行器):
   9a-1: 自适应偏置Trim — 前后翼反向偏置(+1.25°/-1.25°), 打破死区
          偏置穿过执行器(alpha=0.3允许位置保持), 不再需要绕过
   9a-2: 高频Dither信号 — 8Hz/1.0°正弦波, 线性化滞环
@@ -43,7 +43,7 @@ class Phase9BellyFlopController(IntegratedBellyFlopController):
 
     接口与7E完全一致: update(state, dt) -> (T, theta_cmd, d_fwd, d_aft, phase, kill, info)
 
-    暗礁29修复后: 偏置穿过执行器(不再绕过), bias_fwd_out=0
+    缺陷29修复后: 偏置穿过执行器(不再绕过), bias_fwd_out=0
     """
 
     def __init__(self, bias_enable=True, dither_enable=False,
@@ -81,7 +81,7 @@ class Phase9BellyFlopController(IntegratedBellyFlopController):
 
         返回: (T, theta_cmd, d_extra_fwd, d_extra_aft, phase, kill, info)
 
-        暗礁29修复后架构:
+        缺陷29修复后架构:
           d_fwd/d_aft = PD + bias + dither (全部穿过执行器)
           执行器(alpha=0.3)允许位置保持 → 偏置有效
           死区由偏置打破(bias > dead_zone) → PD有效
@@ -101,7 +101,7 @@ class Phase9BellyFlopController(IntegratedBellyFlopController):
         else:
             self._bias_active = 0.0
 
-        # ============ 1. 偏置 (穿过执行器, 暗礁29修复后有效) ============
+        # ============ 1. 偏置 (穿过执行器, 缺陷29修复后有效) ============
         bias_fwd = 0.0
         bias_aft = 0.0
         if self.bias_enable:
@@ -130,7 +130,7 @@ class Phase9BellyFlopController(IntegratedBellyFlopController):
         info['d_aft_pd'] = d_aft_pd
         info['d_fwd_final'] = d_fwd_final
         info['d_aft_final'] = d_aft_final
-        info['bias_fwd_out'] = 0.0  # 暗礁29修复: 偏置已穿过执行器, 不再绕过
+        info['bias_fwd_out'] = 0.0  # 缺陷29修复: 偏置已穿过执行器, 不再绕过
         info['bias_aft_out'] = 0.0
 
         return T, theta_cmd, d_fwd_final, d_aft_final, phase, kill, info

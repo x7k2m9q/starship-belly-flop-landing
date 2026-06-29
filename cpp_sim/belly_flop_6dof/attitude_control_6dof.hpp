@@ -19,7 +19,7 @@
 //   wn = 2π·0.5 ≈ 3.14 rad/s (~0.5Hz)
 //   ζ = 0.9
 //
-// 陷波滤波器 (暗礁 35: 陷波器相位匹配):
+// 陷波滤波器 (缺陷 35: 陷波器相位匹配):
 //   中心频率: 2.35Hz, 14.7Hz (结构模态, 继承自 Python flex_dynamics)
 //   串联在 pitch/yaw 误差通道, 防止激励弯曲共振
 //   滚转通道 (Xb) 无弯曲耦合, 不过滤
@@ -201,7 +201,7 @@ public:
         // e_q = q_actual^{-1} ⊗ q_des
         // e_vec[0]=滚转, e_vec[1]=俯仰, e_vec[2]=偏航
         Quaternion e_q = q_actual.inverse() * q_des;
-        // 暗礁 18: sign(qw) 处理双覆盖 — w<0 整体取反, 保证最短路径
+        // 缺陷 18: sign(qw) 处理双覆盖 — w<0 整体取反, 保证最短路径
         if (e_q.w < 0.0f) {
             e_q.w = -e_q.w; e_q.x = -e_q.x; e_q.y = -e_q.y; e_q.z = -e_q.z;
         }
@@ -214,7 +214,7 @@ public:
             omega_des[2] - omega_actual[2]
         };
 
-        // ---- 陷波滤波 (pitch/yaw 通道, 暗礁 35) ----
+        // ---- 陷波滤波 (pitch/yaw 通道, 缺陷 35) ----
         // 滚转通道 (Xb) 无弯曲耦合, 不过滤
         if (use_notch) {
             e_vec[1] = notch_pitch.filter(e_vec[1]);

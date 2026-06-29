@@ -2,8 +2,8 @@
 Belly-Flop Step 7D: 翻转段 bang-bang + PD + 前馈补偿验证.
 =====================================================
 验证目标:
-  1. t_switch解析公式正确 (暗礁21)
-  2. 前馈力矩补偿有效 (暗礁22)
+  1. t_switch解析公式正确 (缺陷21)
+  2. 前馈力矩补偿有效 (缺陷22)
   3. 翻转时间 < 8s (Kill Criteria)
   4. 翻转后θ收敛到0° ± 5°
   5. 翻转过程q不发散
@@ -40,9 +40,9 @@ def main():
     print()
 
     # =================================================================
-    # 1. t_switch解析公式验证 (暗礁21)
+    # 1. t_switch解析公式验证 (缺陷21)
     # =================================================================
-    banner('[1] t_switch解析公式验证 (暗礁21)')
+    banner('[1] t_switch解析公式验证 (缺陷21)')
 
     # 翻转起始条件 (belly→flip切换点)
     # h=3.5km, vz=200m/s, θ=85°
@@ -181,23 +181,23 @@ def main():
     print()
 
     # =================================================================
-    # 3. 暗礁验证
+    # 3. 缺陷验证
     # =================================================================
-    banner('[3] 暗礁验证')
+    banner('[3] 缺陷验证')
 
-    # 暗礁21: t_switch解析
-    print(f'  暗礁21 (t_switch解析): t_switch={t_switch:.3f}s, t_total={t_total:.3f}s')
+    # 缺陷21: t_switch解析
+    print(f'  缺陷21 (t_switch解析): t_switch={t_switch:.3f}s, t_total={t_total:.3f}s')
     print(f'    公式: t_switch=sqrt(|dtheta|/alpha_max)=sqrt({np.degrees(THETA_BELLY):.1f}deg/{alpha_max:.4f})')
     print(f'    {"PASS" if t_total < T_FLIP_MAX else "FAIL"} (t_total < {T_FLIP_MAX}s)')
     print()
 
-    # 暗礁22: 前馈力矩补偿
+    # 缺陷22: 前馈力矩补偿
     # 检查M_aero在翻转过程中的变化
     if flip_done:
         flip_idx = int(flip_done_time / dt)
         M_aero_range = np.max(np.abs(M_aeros[:flip_idx])) if flip_idx > 0 else 0
         M_flap_range = np.max(np.abs(M_flaps[:flip_idx])) if flip_idx > 0 else 0
-        print(f'  暗礁22 (前馈力矩补偿):')
+        print(f'  缺陷22 (前馈力矩补偿):')
         print(f'    M_aero范围: ±{M_aero_range:.4e} N*m')
         print(f'    M_flap范围: ±{M_flap_range:.4e} N*m')
         print(f'    前馈补偿有效: M_flap跟踪M_aero {"PASS" if M_flap_range > 0.5*M_aero_range else "CHECK"}')
@@ -305,9 +305,9 @@ def main():
     # =================================================================
     banner('Step 7D 验证总结')
 
-    print(f'  暗礁21 (t_switch解析):    {"PASS" if t_total < T_FLIP_MAX else "FAIL"} '
+    print(f'  缺陷21 (t_switch解析):    {"PASS" if t_total < T_FLIP_MAX else "FAIL"} '
           f'(t_total={t_total:.2f}s < {T_FLIP_MAX}s)')
-    print(f'  暗礁22 (前馈力矩补偿):    PASS (M_flap跟踪M_aero)')
+    print(f'  缺陷22 (前馈力矩补偿):    PASS (M_flap跟踪M_aero)')
     print(f'  Kill (翻转超时):          {"PASS" if kill_pass else "FAIL"}')
     print(f'  翻转精度:                 {"PASS" if theta_pass else "FAIL"} '
           f'(theta_err={theta_err:.2f}deg < 5deg)')

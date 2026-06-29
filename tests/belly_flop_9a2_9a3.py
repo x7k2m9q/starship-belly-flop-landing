@@ -1,7 +1,7 @@
 """
-Phase 9.0 Step 9a: 偏置扫描 + Dither + 补偿 (暗礁28修复后)
+Phase 9.0 Step 9a: 偏置扫描 + Dither + 补偿 (缺陷28修复后)
 ==========================================================
-暗礁28: Bouc-Wen(A=1.0)完全阻塞恒定信号 → 偏置必须绕过执行器
+缺陷28: Bouc-Wen(A=1.0)完全阻塞恒定信号 → 偏置必须绕过执行器
 修复: 偏置在执行器输出后叠加 (机械预紧力模型)
 
 偏置扫描:
@@ -36,7 +36,7 @@ THETA_INIT = np.deg2rad(85.0)
 
 def run_single(seed, bias_fwd_deg=0.0, bias_aft_deg=0.0,
                dither_enable=False, gain_comp_enable=False):
-    """单次仿真. 偏置绕过执行器(暗礁28修复)."""
+    """单次仿真. 偏置绕过执行器(缺陷28修复)."""
     rng = np.random.default_rng(seed)
     m_fuel_init = M_FUEL_INIT * 0.7 * (1.0 + rng.uniform(-0.05, 0.05))
     vz_init = VZ_INIT * (1.0 + rng.uniform(-0.10, 0.10))
@@ -71,7 +71,7 @@ def run_single(seed, bias_fwd_deg=0.0, bias_aft_deg=0.0,
             break
 
         T_act = actuators.update_thrust(T_cmd, DT, t)
-        # 暗礁28修复: PD送入执行器, 偏置在执行器后叠加(绕过Bouc-Wen)
+        # 缺陷28修复: PD送入执行器, 偏置在执行器后叠加(绕过Bouc-Wen)
         d_fwd_act, d_aft_act = actuators.update_flaps(d_fwd, d_aft, DT)
         d_fwd_act += info.get('bias_fwd_out', 0.0)
         d_aft_act += info.get('bias_aft_out', 0.0)
@@ -153,7 +153,7 @@ def print_result(label, n_mc, landing_rate, outcomes, l3_phases, belly_errs, ela
 if __name__ == '__main__':
     N_MC = 20
     print("=" * 70)
-    print("Phase 9.0 Step 9a: 偏置扫描 (暗礁28修复: 偏置绕过执行器)")
+    print("Phase 9.0 Step 9a: 偏置扫描 (缺陷28修复: 偏置绕过执行器)")
     print("=" * 70)
 
     configs = [

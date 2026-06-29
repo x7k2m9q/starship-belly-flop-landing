@@ -1,12 +1,12 @@
 """
 Belly-Flop Step 7C-3: 完整 sin^2(a) 凸化验证.
-解析 Jacobian + 暗礁17/18/19/20 全部验证.
+解析 Jacobian + 缺陷17/18/19/20 全部验证.
 
 验证内容:
-  1. 解析 Jacobian vs 数值 Jacobian 精度对比 (暗礁17/18)
+  1. 解析 Jacobian vs 数值 Jacobian 精度对比 (缺陷17/18)
   2. SCvx 7C-3 收敛性 (Kill: 10次不收敛 -> 退回7C-2)
-  3. 暗礁19 论文讨论: sin(2*85 deg)~=0.17 敏感度消失
-  4. 暗礁20: CL cos(2a)*0.5 失速因子
+  3. 缺陷19 论文讨论: sin(2*85 deg)~=0.17 敏感度消失
+  4. 缺陷20: CL cos(2a)*0.5 失速因子
 """
 import sys
 import os
@@ -39,7 +39,7 @@ def main():
     # =================================================================
     # 1. 解析 Jacobian vs 数值 Jacobian 精度对比
     # =================================================================
-    banner('[1] 解析 Jacobian vs 数值 Jacobian 精度对比 (暗礁17/18)')
+    banner('[1] 解析 Jacobian vs 数值 Jacobian 精度对比 (缺陷17/18)')
 
     # 测试点1: 典型 belly-flop 状态
     test_cases = [
@@ -85,9 +85,9 @@ def main():
     print()
 
     # =================================================================
-    # 2. 暗礁19 论文讨论: sin(2*85 deg) 敏感度消失
+    # 2. 缺陷19 论文讨论: sin(2*85 deg) 敏感度消失
     # =================================================================
-    banner('[2] 暗礁19: sin(2*85 deg)~=0.17 敏感度消失 (论文讨论)')
+    banner('[2] 缺陷19: sin(2*85 deg)~=0.17 敏感度消失 (论文讨论)')
 
     sens = analyze_reef19_sensitivity()
     print(f'  配平点 a=85 deg: sin(2a) = {sens["sens_at_trim_85deg"]:.4f}')
@@ -106,9 +106,9 @@ def main():
     print()
 
     # =================================================================
-    # 3. 暗礁20: CL cos(2a)*0.5 失速因子验证
+    # 3. 缺陷20: CL cos(2a)*0.5 失速因子验证
     # =================================================================
-    banner('[3] 暗礁20: CL cos(2a)*0.5 失速因子验证')
+    banner('[3] 缺陷20: CL cos(2a)*0.5 失速因子验证')
 
     # 验证 CL 的解析偏导包含 0.5 因子
     state = np.array([100.0, 8000.0, 50.0, 300.0, np.deg2rad(80.0), 0.0])
@@ -123,7 +123,7 @@ def main():
     err_cl = max(abs(A_a[2,4] - A_n[2,4]), abs(A_a[3,4] - A_n[3,4]))
     print(f'  CL偏导验证: A[2,4] err={abs(A_a[2,4]-A_n[2,4]):.2e}, '
           f'A[3,4] err={abs(A_a[3,4]-A_n[3,4]):.2e}')
-    print(f'  暗礁20 (CL*0.5失速因子): {"PASS" if err_cl < 1e-4 else "FAIL"}')
+    print(f'  缺陷20 (CL*0.5失速因子): {"PASS" if err_cl < 1e-4 else "FAIL"}')
     print()
 
     # =================================================================
@@ -198,10 +198,10 @@ def main():
         theta_cmd_deg = np.degrees(sim['theta_cmd'])
         print(f'  theta_cmd 范围: [{theta_cmd_deg.min():.1f}, {theta_cmd_deg.max():.1f}] deg')
 
-        # 暗礁13: theta_cmd 变化率
+        # 缺陷13: theta_cmd 变化率
         if len(theta_cmd_deg) > 1:
             d_theta_cmd = np.max(np.abs(np.diff(theta_cmd_deg)))
-            print(f'  暗礁13: max|d_theta_cmd/step| = {d_theta_cmd:.2f} deg '
+            print(f'  缺陷13: max|d_theta_cmd/step| = {d_theta_cmd:.2f} deg '
                   f'({"PASS" if d_theta_cmd < 10 else "CHECK"})')
     print()
 
@@ -210,13 +210,13 @@ def main():
     # =================================================================
     banner('Step 7C-3 验证总结')
 
-    print(f'  暗礁17 (Q*CD Taylor):    {"PASS" if all_pass else "FAIL"} '
+    print(f'  缺陷17 (Q*CD Taylor):    {"PASS" if all_pass else "FAIL"} '
           f'(解析Jacobian相对误差<5%, 关键项精确匹配)')
-    print(f'  暗礁18 (gamma偏导):       {"PASS" if all_pass else "FAIL"} '
+    print(f'  缺陷18 (gamma偏导):       {"PASS" if all_pass else "FAIL"} '
           f'(atan2偏导解析正确, A[2,4]/A[3,4]误差<1e-9)')
-    print(f'  暗礁19 (敏感度消失):      PASS (论文讨论完成, '
+    print(f'  缺陷19 (敏感度消失):      PASS (论文讨论完成, '
           f'sin(2*85deg)={sens["sens_at_trim_85deg"]:.4f})')
-    print(f'  暗礁20 (CL*0.5失速):      {"PASS" if err_cl < 1e-4 else "FAIL"} '
+    print(f'  缺陷20 (CL*0.5失速):      {"PASS" if err_cl < 1e-4 else "FAIL"} '
           f'(CL偏导含0.5因子)')
     print()
     print(f'  SCvx 7C-3 收敛: {converged_7c3}')

@@ -88,7 +88,7 @@ def state_derivative(state, T, theta_cmd, delta_extra_fwd=0.0, delta_extra_aft=0
     alpha_cmd = (alpha_cmd + np.pi) % (2 * np.pi) - np.pi
     delta_trim_fwd, delta_trim_aft = trim_flaps(alpha_cmd, M)
 
-    # 总襟翼 = 配平 + PD阻尼 (暗礁7B: 主动阻尼解决暗礁3弱阻尼)
+    # 总襟翼 = 配平 + PD阻尼 (缺陷7B: 主动阻尼解决缺陷3弱阻尼)
     delta_fwd = np.clip(delta_trim_fwd + delta_extra_fwd, -DELTA_MAX, DELTA_MAX)
     delta_aft = np.clip(delta_trim_aft + delta_extra_aft, -DELTA_MAX, DELTA_MAX)
 

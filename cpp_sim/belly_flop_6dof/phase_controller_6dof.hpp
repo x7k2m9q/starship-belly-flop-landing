@@ -142,7 +142,7 @@ inline float compute_max_flip_torque(const State6DOF& state, float& Q_out) {
     return Q * L_REF * (C_DELTA_FWD + C_DELTA_AFT) * DELTA_MAX;
 }
 
-// 6DOF bang-bang 切换时间解析公式 (暗礁 21)
+// 6DOF bang-bang 切换时间解析公式 (缺陷 21)
 // 返回: (t_switch, t_total, alpha_max, M_max)
 inline void compute_t_switch(float theta0_deg, float thetaf_deg,
                               const State6DOF& state, float m_fuel,
@@ -306,7 +306,7 @@ public:
         return h_to_land / std::fabs(vz);
     }
 
-    // 能量检查 (暗礁 9)
+    // 能量检查 (缺陷 9)
     bool energy_check(const State6DOF& state, char* reason_buf, int buf_size) const {
         Vec3f vel_n = state.vel_n();
         float V = vel_n.norm();
@@ -335,7 +335,7 @@ public:
         return false;
     }
 
-    // 2 秒斜坡过渡 (暗礁 7)
+    // 2 秒斜坡过渡 (缺陷 7)
     void ramp_update(float dt) {
         if (ramp_active) {
             ramp_t += dt;

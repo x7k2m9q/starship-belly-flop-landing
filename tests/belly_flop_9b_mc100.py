@@ -5,7 +5,7 @@ Phase 9.0 Step 9b: 100次MC鲁棒性验证
 9b目标: 100次MC验证鲁棒性, 验收标准 Safe Landing > 50%
 
 测试配置 (基于9a最优):
-  1. 无偏置baseline (验证暗礁29+30修复的独立效果)
+  1. 无偏置baseline (验证缺陷29+30修复的独立效果)
   2. 无偏置+Dither (9a最优BELLY err)
   3. F-1.25/A+1.25+Dither (偏置+Dither综合)
 """
